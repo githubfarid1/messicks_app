@@ -114,6 +114,7 @@ def parse(url):
     merger.write(s.PDF_RESULT_PATH + os.sep + resfilename)
     print(s.PDF_RESULT_PATH + os.sep + resfilename, "...", "Saved")
     merger.close()
+    driver.quit()
 
 def main():
     parser = argparse.ArgumentParser(description="Catalog Product Downloader")
