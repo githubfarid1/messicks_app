@@ -19,6 +19,8 @@ import random
 import settings as s
 import argparse
 import warnings
+import validators
+
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
@@ -110,13 +112,23 @@ def parse(url):
         merger.append(file)
     
     merger.write(s.PDF_RESULT_PATH + os.sep + resfilename)
-
+    print(s.PDF_RESULT_PATH + os.sep + resfilename, "...", "Saved")
+    merger.close()
 
 def main():
     parser = argparse.ArgumentParser(description="Catalog Product Downloader")
     parser.add_argument('-url', '--url', type=str,help="URL product")
     args = parser.parse_args()
-    parse(url=args.url)
+    url = args.url
+    urllist = str(url).split("#")
+    # input(urllist)
+    # sys.exit()
+    for theurl in urllist:
+        if validators.url(theurl.strip()) == True:
+            print(theurl, "Processing....")
+            parse(url=theurl)
+            print(theurl, "....", "Success")
+
     input("End Process..")    
 
 

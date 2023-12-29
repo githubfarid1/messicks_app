@@ -130,9 +130,9 @@ class MessickPdfDownloadFrame(ttk.Frame):
 		closeButton = CloseButton(self)
 
 		labelsname = Label(self, text="Product URL:")
-		urltxt = Entry(self, width=65)
-		
-		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process(urltxt=urltxt))
+		# urltxt = Entry(self, width=65)
+		urltxt = Text(self, height=12, width=40) 
+		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process(urltxt=urltxt.get("1.0", END) ))
 		
 		# layout
 		titleLabel.grid(column = 0, row = 0, sticky = (W, E, N, S))
@@ -143,7 +143,8 @@ class MessickPdfDownloadFrame(ttk.Frame):
 
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
-			run_module(comlist=[PYLOC, "modules/catmessick.py", "-url", kwargs['urltxt'].get()])
+			urls = str(kwargs['urltxt']).replace("\n", "#")
+			run_module(comlist=[PYLOC, "modules/catmessick.py", "-url", urls])
 
 class FrameButton(ttk.Button):
 	def __init__(self, parent, window, **kwargs):
