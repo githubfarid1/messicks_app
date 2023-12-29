@@ -11,7 +11,7 @@ import sys
 from sys import platform
 from subprocess import Popen, check_call
 # import openpyxl
-# import git
+import git
 import warnings
 import shutil
 import settings as s
@@ -62,8 +62,8 @@ class Window(Tk):
 
 	def gitPull(self):
 		git_dir = os.getcwd() 
-		# g = git.cmd.Git(git_dir)
-		# g.pull()		
+		g = git.cmd.Git(git_dir)
+		g.pull()		
 		messagebox.showinfo(title='Info', message='the scripts has updated..')
 
 
