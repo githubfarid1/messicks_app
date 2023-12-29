@@ -60,9 +60,11 @@ def parse(url):
     first = True
     merger = PdfMerger()
     time.sleep(2)
+    curr=driver.current_window_handle
+    # breakpoint()
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
-        WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
         time.sleep(2)
         if first:
             first = False
@@ -77,15 +79,30 @@ def parse(url):
             continue
         opt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
         opt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
+
         if opt1txt == firstopt1txt and opt2txt == firstopt2txt:
             break
+        # breakpoint()
+        
         driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
         time.sleep(random.randint(5, 7))
 
         print("download for ", opt1txt, opt2txt)
         time.sleep(random.randint(2, 5))
-
-
+        if  len(driver.window_handles) > 1:
+            # breakpoint()
+            # driver.switch_to.window(curr)
+            for handle in driver.window_handles:
+                if handle != curr:
+                    driver.switch_to.window(handle)
+                    time.sleep(2)
+                    try:
+                        driver.close()
+                    except:
+                        pass
+                    if len(driver.window_handles) == 1:
+                        break
+            driver.switch_to.window(curr)
     print("PDF files merging ...")
     files = list(filter(os.path.isfile, glob.glob(windp + os.sep + "pdf*.pdf")))
     files.sort(key=lambda x: os.path.getmtime(x))

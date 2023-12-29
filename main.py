@@ -11,7 +11,7 @@ import sys
 from sys import platform
 from subprocess import Popen, check_call
 # import openpyxl
-import git
+# import git
 import warnings
 import shutil
 import settings as s
@@ -62,8 +62,8 @@ class Window(Tk):
 
 	def gitPull(self):
 		git_dir = os.getcwd() 
-		g = git.cmd.Git(git_dir)
-		g.pull()		
+		# g = git.cmd.Git(git_dir)
+		# g.pull()		
 		messagebox.showinfo(title='Info', message='the scripts has updated..')
 
 
@@ -106,8 +106,8 @@ class MainFrame(ttk.Frame):
 		messicksButton = FrameButton(self, window, text="Download Catalog Product (messicks.com)", class_frame=MessickPdfDownloadFrame)
 
 		# # layout
-		titleLabel.grid(column = 0, row = 0, sticky=(W, E, N, S), padx=15, pady=5, columnspan=2)
-		messicksButton.grid(column = 0, row = 1, sticky=(W, E, N, S), padx=15, pady=5)
+		titleLabel.grid(column = 0, row = 0, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
+		messicksButton.grid(column = 0, row = 1, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 
 class MessickPdfDownloadFrame(ttk.Frame):
 	def __init__(self, window) -> None:
