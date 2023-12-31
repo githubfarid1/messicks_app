@@ -2,6 +2,8 @@
 /chrome-user-data
 /pdfs_download
 /pdfs_result
+/pdfs_extract
+/odfs_result
 /chromedriver
 settings.py
 __pycache__
