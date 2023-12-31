@@ -15,7 +15,7 @@ import glob
 def parse():
     dlist = []
     data = OrderedDict()
-    dlist.append(["NO", "NAME", "VENDOR",	"SECTION", "DIAGRAM", "LINK"])
+    dlist.append(["NO", "VENDOR", "NAME",  "SECTION", "DIAGRAM", "LINK"])
     no = 1
     for fileinput in glob.glob(s.PDF_RESULT_PATH + os.sep + "*.pdf"):
         reader = PdfReader(fileinput)
@@ -33,7 +33,7 @@ def parse():
                     writer.write(s.PDF_EXTRACT_PATH + os.sep + filename)
                     print(name, vendor, section, diagram)
                     link = '=HYPERLINK(CONCATENATE($Sheet2.$A$1,"{}"),"OPEN PDF")'.format(filename)
-                    dlist.append([no, name, vendor, section, diagram, link])
+                    dlist.append([no,  vendor, name, section, diagram, link])
                     writer.close()
                     no+=1
                 writer = PdfWriter()
