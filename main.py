@@ -208,7 +208,7 @@ class GrabUrlsFrame(ttk.Frame):
 
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
-			run_module(comlist=[PYLOC, "modules/pdfextractor.py"])
+			run_module(comlist=[PYLOC, "modules/urlsmessick.py"])
 
 class FrameButton(ttk.Button):
 	def __init__(self, parent, window, **kwargs):
