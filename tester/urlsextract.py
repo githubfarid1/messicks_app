@@ -82,7 +82,7 @@ vendorurls = []
 modelurls = []
 dlist = []
 data = OrderedDict()
-dlist.append(["NO", "VENDOR", "NAME", "URL"])
+dlist.append(["NO", "VENDOR", "URL", "ISDOWNLOAD"])
 no = 1
 for vendor in vendors:
     vendorurl = vendor.get_attribute('href')
@@ -94,52 +94,42 @@ for vendor in vendors:
 
 for vendorurl in vendorurls:
     driver.get(vendorurl[0])
+    print(vendorurl[1], end="...", flush=True)
     time.sleep(2)
     brandId = driver.find_element(By.CSS_SELECTOR,"input#brandId").get_attribute('value')
     response = requests.get(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/0', cookies=cookies, headers=headers)
-    # print(response.text)
     eqids1 = response.json()
+    vcount = 0
     for eqid1 in eqids1:
         eqidId1= eqid1['equipmentTypeId']
         response = requests.get(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/{eqidId1}', cookies=cookies, headers=headers)
         eqids2 = response.json()
         for eqid2 in eqids2:
             eqidId2= eqid2['equipmentTypeId']
-            # print(eqidId2)
-            # time.sleep(3)
-
             response = requests.get(f'https://messicks.com/api/vendor/models/{brandId}/{eqidId2}', cookies=cookies, headers=headers)
             eqids3 = response.json()
             for eqid3 in eqids3:
-                # eqidId3 = eqid3['equipmentTypeId']
-                dlist.append([no, vendorurl[1], '', f"https://messicks.com{eqid3['modelUrl']}"])
+                theurl = f"https://messicks.com{eqid3['modelUrl']}"
+                dlist.append([no, vendorurl[1], theurl, 'NO'])
                 no += 1
-            
+                vcount += 1
+                if vcount == 5:
+                    break
+            if vcount == 5:
+                break
+        if vcount == 5:
+            break
+    if vcount == 5:
+        break
 
-    break
+    # break
+    print(vcount)
 
 data.update({"Sheet1": dlist})
+data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
+data.update({"Sheet3": [["file://<your_pdf_location>"]]})
+driver.quit()
 save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
-# print(len(modelurls))
-
-    # input(data)
-# for vendor in vendors:
-#     vendorurl = vendor.get_attribute('href')
-#     driver.get(vendorurl)
-#     # breakpoint()
-#     brmodel = driver.find_element(By.XPATH, '//*[@id="scroll-spot"]/div[1]/div[2]/div[2]')
-#     brmodel.click()
-#     time.sleep(2)
-#     models = driver.find_elements(By.CSS_SELECTOR,"div[class='nav-tile m-2 tile-200 global-model-group']")
-#     for model in models:
-#         if model.text != '':
-#             model.click()
-#             time.sleep(3)
-#             itemmodels = driver.find_elements(By.CSS_SELECTOR,"div[class='nav-tile m-2 tile-200 global-model-group']")
-#             # breakpoint()
-#             for item in itemmodels:
-#                 print(item.text)
-#             breakpoint()
 
 
 

@@ -4,6 +4,7 @@
 /pdfs_result
 /pdfs_extract
 /odfs_result
+/pdfs_extract2
 /chromedriver
 settings.py
 __pycache__

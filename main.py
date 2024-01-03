@@ -103,13 +103,15 @@ class MainFrame(ttk.Frame):
   
 		
 		titleLabel = TitleLabel(self, 'Main Menu')
-		messicksButton = FrameButton(self, window, text="Download PDF Diagram (messicks.com)", class_frame=MessickPdfDownloadFrame)
+		messicksButton = FrameButton(self, window, text="Download PDF Diagram per URLs (messicks.com)", class_frame=MessickPdfDownloadFrame)
 		extractButton = FrameButton(self, window, text="Extract PDF Diagram", class_frame=ExtractPdfFrame)
+		graburlButton = FrameButton(self, window, text="Grab URLs (messicks.com)", class_frame=GrabUrlsFrame)
 
 		# # layout
 		titleLabel.grid(column = 0, row = 0, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		messicksButton.grid(column = 0, row = 1, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		extractButton.grid(column = 0, row = 2, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
+		graburlButton.grid(column = 0, row = 3, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 
 
 class MessickPdfDownloadFrame(ttk.Frame):
@@ -149,6 +151,36 @@ class MessickPdfDownloadFrame(ttk.Frame):
 			run_module(comlist=[PYLOC, "modules/catmessick.py", "-url", urls])
 
 class ExtractPdfFrame(ttk.Frame):
+	def __init__(self, window) -> None:
+		super().__init__(window)
+		# configure
+		self.grid(column=0, row=0, sticky=(N, E, W, S), columnspan=4)
+		self.config(padding="20 20 20 20", borderwidth=1, relief='groove')
+
+		self.columnconfigure(0, weight=1)
+		self.rowconfigure(0, weight=1)
+		self.rowconfigure(1, weight=1)
+		self.rowconfigure(2, weight=1)
+		self.rowconfigure(3, weight=1)
+		self.rowconfigure(4, weight=1)
+		self.rowconfigure(5, weight=1)
+		
+		# populate
+		titleLabel = TitleLabel(self, text="Extract PDF Diagram")
+		closeButton = CloseButton(self)
+
+		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process())
+		
+		# layout
+		titleLabel.grid(column = 0, row = 0, sticky = (W, E, N, S))
+		runButton.grid(column = 0, row = 5, sticky = (E))
+		closeButton.grid(column = 0, row = 6, sticky = (E, N, S))
+
+	def run_process(self, **kwargs):
+			# messagebox.showwarning(title='Warning', message='')
+			run_module(comlist=[PYLOC, "modules/pdfextractor.py"])
+
+class GrabUrlsFrame(ttk.Frame):
 	def __init__(self, window) -> None:
 		super().__init__(window)
 		# configure
