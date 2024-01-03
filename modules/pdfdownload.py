@@ -165,13 +165,13 @@ def main():
 
     for idx, url in enumerate(newlist):
         if url[3] == 'NO':
-            try:
-                diagramlist = parse(url=url[2], driver=driver)
-                newlist[idx] = [url[0], url[1], url[2], 'SUCCESS']
-                diagramexist += diagramlist
-            except:
-                newlist[idx] = [url[0], url[1], url[2], 'FAILED']
-                break
+            # try:
+            diagramlist = parse(url=url[2], driver=driver)
+            newlist[idx] = [url[0], url[1], url[2], 'SUCCESS']
+            diagramexist += diagramlist
+            # except:
+            #     newlist[idx] = [url[0], url[1], url[2], 'FAILED']
+            #     break
 
     # newlist.insert(0, ["NO", "VENDOR", "URL", "ISDOWNLOAD"])
     # breakpoint()
