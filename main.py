@@ -103,15 +103,17 @@ class MainFrame(ttk.Frame):
   
 		
 		titleLabel = TitleLabel(self, 'Main Menu')
-		messicksButton = FrameButton(self, window, text="Download PDF Diagram per URLs (messicks.com)", class_frame=MessickPdfDownloadFrame)
+		messicksButton = FrameButton(self, window, text="Download PDF Diagram by Text Input", class_frame=MessickPdfDownloadFrame)
 		extractButton = FrameButton(self, window, text="Extract PDF Diagram", class_frame=ExtractPdfFrame)
-		graburlButton = FrameButton(self, window, text="Grab URLs (messicks.com)", class_frame=GrabUrlsFrame)
+		graburlButton = FrameButton(self, window, text="Grab URLs", class_frame=GrabUrlsFrame)
+		pdfDownloadButton = FrameButton(self, window, text="Download PDF Diagram by File input", class_frame=MessickPdfDownload2Frame)
 
 		# # layout
 		titleLabel.grid(column = 0, row = 0, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		messicksButton.grid(column = 0, row = 1, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		extractButton.grid(column = 0, row = 2, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		graburlButton.grid(column = 0, row = 3, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
+		pdfDownloadButton.grid(column = 0, row = 4, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 
 
 class MessickPdfDownloadFrame(ttk.Frame):
@@ -196,7 +198,7 @@ class GrabUrlsFrame(ttk.Frame):
 		self.rowconfigure(5, weight=1)
 		
 		# populate
-		titleLabel = TitleLabel(self, text="Extract PDF Diagram")
+		titleLabel = TitleLabel(self, text="Grab URLs")
 		closeButton = CloseButton(self)
 
 		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process())
@@ -209,6 +211,36 @@ class GrabUrlsFrame(ttk.Frame):
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
 			run_module(comlist=[PYLOC, "modules/urlsmessick.py"])
+
+class MessickPdfDownload2Frame(ttk.Frame):
+	def __init__(self, window) -> None:
+		super().__init__(window)
+		# configure
+		self.grid(column=0, row=0, sticky=(N, E, W, S), columnspan=4)
+		self.config(padding="20 20 20 20", borderwidth=1, relief='groove')
+
+		self.columnconfigure(0, weight=1)
+		self.rowconfigure(0, weight=1)
+		self.rowconfigure(1, weight=1)
+		self.rowconfigure(2, weight=1)
+		self.rowconfigure(3, weight=1)
+		self.rowconfigure(4, weight=1)
+		self.rowconfigure(5, weight=1)
+		
+		# populate
+		titleLabel = TitleLabel(self, text="Download PDF Diagram by File input")
+		odsInputFile = FileChooserFrame(self, btype="file", label="Select ODS Input File:", filetypes=(("ods files", "*.ods"),("all files", "*.*")))
+		closeButton = CloseButton(self)
+		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process(input=odsInputFile.filename))
+		
+		# layout
+		titleLabel.grid(column = 0, row = 0, sticky = (W, E, N, S))
+		runButton.grid(column = 0, row = 5, sticky = (E))
+		closeButton.grid(column = 0, row = 6, sticky = (E, N, S))
+		odsInputFile.grid(column = 0, row = 1, sticky = (W,E))
+	def run_process(self, **kwargs):
+			# messagebox.showwarning(title='Warning', message='')
+			run_module(comlist=[PYLOC, "modules/pdfdownload.py", "-i", kwargs['input']])
 
 class FrameButton(ttk.Button):
 	def __init__(self, parent, window, **kwargs):
@@ -228,6 +260,66 @@ class CloseButton(ttk.Button):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.config(text = '< Back', command=lambda : parent.destroy())
+
+class FileChooserFrame(ttk.Frame):
+	def __init__(self, window, **kwargs):
+		super().__init__(window)
+		self.__filename = StringVar()
+		# FOR EXCEL SHEET DISPLAY
+		try: 
+			sheetlist = kwargs['sheetlist']
+		except:
+			sheetlist = None
+
+		fileLabel = ttk.Label(self, textvariable=self.__filename, foreground="red")
+		label1 = ttk.Label(self, text=kwargs['label'])
+		chooseButton = ttk.Button(self, text="...", command=lambda:self.chooseButtonClick(kwargs['btype'], filetypes=kwargs['filetypes'], sheetlist=sheetlist))
+		self.rowconfigure(0, weight=1)
+		self.columnconfigure(0, weight=1)
+		self.columnconfigure(1, weight=1)
+		self.columnconfigure(2, weight=1)
+		# self.config(width=70, height=10)
+		label1.grid(row=0, column=0, sticky=(W))
+		fileLabel.grid(row=0, column=1, sticky=(W,E, N,S))
+		chooseButton.grid(row=0, column=2, sticky=(E))
+		
+	@property
+	def filename(self):
+		return self.__filename.get()
+
+	@filename.setter
+	def filename(self, value):
+		self.__filename.set(value)
+
+	def chooseButtonClick(self, btype, **kwargs):
+		if btype == 'folder':
+			filenametmp = filedialog.askdirectory(title='Select Folder')
+		else:
+			filenametmp = filedialog.askopenfilename(title='Select File', filetypes=kwargs['filetypes'])
+
+		if filenametmp != ():
+			self.filename = filenametmp
+			if kwargs['sheetlist'] != None:
+
+				fnameinput = os.path.basename(filenametmp)
+				backfile = "__tmp{}{}".format(os.path.splitext(fnameinput)[0], os.path.splitext(fnameinput)[1])
+				try:
+					shutil.copyfile(filenametmp, backfile)
+					check_call(["attrib","+H",backfile])					
+				except:
+					pass
+
+
+				# wb = openpyxl.load_workbook(backfile, read_only=True)
+				# if type(kwargs['sheetlist']) == tuple:
+				# 	for idx, sl in enumerate(kwargs['sheetlist']):
+				# 		kwargs['sheetlist'][idx]['values'] = wb.sheetnames
+				# 		kwargs['sheetlist'][idx].current(0)
+				# else:
+				# 	kwargs['sheetlist']['values'] = wb.sheetnames
+				# 	kwargs['sheetlist'].current(0)
+				# wb.close()
+				# os.remove(backfile)
 
 def run_module(comlist):
 	if platform == "linux" or platform == "linux2":

@@ -132,7 +132,7 @@ def parse(url, driver):
         else:
             filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-            shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH2 + os.sep + filename)
+            shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
             link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
 
@@ -141,16 +141,20 @@ def parse(url, driver):
 
 def main():
     parser = argparse.ArgumentParser(description="Catalog Product Downloader")
-    parser.add_argument('-source', '--source', type=str,help="Source File")
-    parser.add_argument('-dest', '--dest', type=str,help="Destination File")
-
+    parser.add_argument('-i', '--input', type=str,help="Source File")
+    
     args = parser.parse_args()
+    isExist = os.path.exists(args.input)
+    if isExist == False :
+        input('Please check the ODS file')
+        sys.exit()
+
     windp = s.CHROME_DOWNLOAD_PATH
     for f in glob.glob(windp + os.sep + "*"):
         os.remove(f)
+
     data = OrderedDict()
-    source = s.ODF_RESULT_PATH + os.sep + "resulturls.ods"
-    dest = s.ODF_RESULT_PATH + os.sep + "dest.ods"
+    source = args.input
     urllist = pods.get_data(afile=source)
     newlist = urllist['Sheet1'].copy()
     diagramexist = urllist['Sheet2'].copy()
@@ -179,17 +183,6 @@ def main():
     pods.save_data(source, data)
     driver.quit()
 
-    # pe.save_as(array=newlist, dest_file_name=s.ODF_RESULT_PATH + os.sep + "resulturls.ods")
-
-
-    # urllist = str(url).split("#")
-    # input(urllist)
-    # sys.exit()
-    # for theurl in urllist:
-    #     if validators.url(theurl.strip()) == True:
-    #         print(theurl, "Processing....")
-    #         parse(url=theurl)
-    #         print(theurl, "....", "Success")
 
     input("End Process..")    
 
