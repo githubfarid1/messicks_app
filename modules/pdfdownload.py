@@ -100,7 +100,7 @@ def parse(url, driver):
             else:
                 filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-                shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH2 + os.sep + filename)
+                shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
                 diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
             continue
@@ -164,14 +164,14 @@ def main():
     driver.maximize_window()
 
     for idx, url in enumerate(newlist):
-        # try:
         if url[3] == 'NO':
-            diagramlist = parse(url=url[2], driver=driver)
-            newlist[idx] = [url[0], url[1], url[2], 'SUCCESS']
-            diagramexist += diagramlist
-        # except:
-        #     newlist[idx] = [url[0], url[1], url[2], 'FAILED']
-        #     break
+            try:
+                diagramlist = parse(url=url[2], driver=driver)
+                newlist[idx] = [url[0], url[1], url[2], 'SUCCESS']
+                diagramexist += diagramlist
+            except:
+                newlist[idx] = [url[0], url[1], url[2], 'FAILED']
+                break
 
     # newlist.insert(0, ["NO", "VENDOR", "URL", "ISDOWNLOAD"])
     # breakpoint()
