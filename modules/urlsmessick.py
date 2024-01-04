@@ -26,29 +26,21 @@ from pyexcel_ods3 import get_data, save_data
 from collections import OrderedDict
 
 warnings.filterwarnings("ignore", category=UserWarning)
+# cookies = {
+#     'ab': 'stage-web-apps',
+#     '_ga': 'GA1.1.798189167.1703477051',
+#     '_gcl_au': '1.1.2118757811.1703477052',
+#     '_fbp': 'fb.1.1703732913826.708081806',
+#     # '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto',
+#     '_ga_YZFGTV3XRZ': 'GS1.1.1704154533.23.1.1704157025.6.0.0',
+# }
 cookies = {
     'ab': 'stage-web-apps',
     '_ga': 'GA1.1.798189167.1703477051',
     '_gcl_au': '1.1.2118757811.1703477052',
     '_fbp': 'fb.1.1703732913826.708081806',
-    # '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto',
-    '_ga_YZFGTV3XRZ': 'GS1.1.1704154533.23.1.1704157025.6.0.0',
-}
-
-headers = {
-    'authority': 'messicks.com',
-    'accept': '*/*',
-    'accept-language': 'en-US,en;q=0.9,ja-JP;q=0.8,ja;q=0.7,id;q=0.6',
-    # 'cookie': 'ab=stage-web-apps; _ga=GA1.1.798189167.1703477051; _gcl_au=1.1.2118757811.1703477052; _fbp=fb.1.1703732913826.708081806; .AspNetCore.Antiforgery.VyLW6ORzMgk=CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto; _ga_YZFGTV3XRZ=GS1.1.1704154533.23.1.1704157025.6.0.0',
-    # 'referer': 'https://messicks.com/vendor/kubota',
-    'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'x-requested-with': 'XMLHttpRequest',
+    '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiRff1tD0FFAu_HUpKxyMUIALdH8ZD3PODjXOPJOjCLVYU77bZQo0HW_s9WsjmgMG3UElP-gvUeG6K5sBKP2GC-_sOTryRgMMbI9CFdXnLqCeqlWhY7P84Kfz5sqesxP3R8',
+    '_ga_YZFGTV3XRZ': 'GS1.1.1704344393.35.1.1704344415.38.0.0',
 }
 
 def parse():
@@ -91,28 +83,59 @@ def parse():
 
     # print(vendorurls)
     # sys.exit()
+    for idx, vendorurl in enumerate(vendorurls):
+        # if idx != 2:
+        #     continue
+        headers = {
+            'authority': 'messicks.com',
+            'accept': '*/*',
+            'accept-language': 'en-US,en;q=0.9,ja-JP;q=0.8,ja;q=0.7,id;q=0.6',
+            # 'cookie': 'ab=stage-web-apps; _ga=GA1.1.798189167.1703477051; _gcl_au=1.1.2118757811.1703477052; _fbp=fb.1.1703732913826.708081806; .AspNetCore.Antiforgery.VyLW6ORzMgk=CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto; _ga_YZFGTV3XRZ=GS1.1.1704154533.23.1.1704157025.6.0.0',
+            'referer': f'{vendorurl[0]}',
+            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'x-requested-with': 'XMLHttpRequest',
+        }
 
-    for vendorurl in vendorurls:
+
         driver.get(vendorurl[0])
         print(vendorurl[1], end="...", flush=True)
         time.sleep(2)
         brandId = driver.find_element(By.CSS_SELECTOR,"input#brandId").get_attribute('value')
+        # print(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/0')
         response = requests.get(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/0', cookies=cookies, headers=headers)
         eqids1 = response.json()
         vcount = 0
         for eqid1 in eqids1:
             eqidId1= eqid1['equipmentTypeId']
+            # print(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/{eqidId1}')
             response = requests.get(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/{eqidId1}', cookies=cookies, headers=headers)
             eqids2 = response.json()
-            for eqid2 in eqids2:
-                eqidId2= eqid2['equipmentTypeId']
-                response = requests.get(f'https://messicks.com/api/vendor/models/{brandId}/{eqidId2}', cookies=cookies, headers=headers)
-                eqids3 = response.json()
-                for eqid3 in eqids3:
-                    theurl = f"https://messicks.com{eqid3['modelUrl']}"
+            if eqids2 == []:
+                response = requests.get(f'https://messicks.com/api/vendor/models/{brandId}/{eqidId1}', cookies=cookies, headers=headers)
+                eqids2 = response.json()
+                for eqid2 in eqids2:
+                    theurl = f"https://messicks.com{eqid2['modelUrl']}"
                     dlist.append([vendorurl[1], theurl, 'NO'])
                     no += 1
                     vcount += 1
+            else:    
+            # breakpoint()
+                for eqid2 in eqids2:
+                    eqidId2= eqid2['equipmentTypeId']
+                    # print(f'https://messicks.com/api/vendor/models/{brandId}/{eqidId2}')
+                    response = requests.get(f'https://messicks.com/api/vendor/models/{brandId}/{eqidId2}', cookies=cookies, headers=headers)
+                    eqids3 = response.json()
+                    for eqid3 in eqids3:
+                        theurl = f"https://messicks.com{eqid3['modelUrl']}"
+                        dlist.append([vendorurl[1], theurl, 'NO'])
+                        no += 1
+                        vcount += 1
 
 
         #FOR TESTER
