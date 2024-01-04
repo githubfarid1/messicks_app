@@ -82,7 +82,7 @@ def parse():
     modelurls = []
     dlist = []
     data = OrderedDict()
-    dlist.append(["NO", "VENDOR", "URL", "ISDOWNLOAD"])
+    dlist.append(["VENDOR", "URL", "ISDOWNLOAD", "LINK"])
     no = 1
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
@@ -110,9 +110,12 @@ def parse():
                 eqids3 = response.json()
                 for eqid3 in eqids3:
                     theurl = f"https://messicks.com{eqid3['modelUrl']}"
-                    dlist.append([no, vendorurl[1], theurl, 'NO'])
+                    dlist.append([vendorurl[1], theurl, 'NO'])
                     no += 1
                     vcount += 1
+
+
+        #FOR TESTER
         #             if vcount == 5:
         #                 break
         #         if vcount == 5:
@@ -122,12 +125,13 @@ def parse():
         # if vcount == 5:
         #     break
 
+
         # break
         print(vcount)
 
     data.update({"Sheet1": dlist})
     data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
-    data.update({"Sheet3": [["file://<your_pdf_location>"]]})
+    data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
     driver.quit()
     save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
 

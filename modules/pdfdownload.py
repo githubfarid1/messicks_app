@@ -21,12 +21,13 @@ import argparse
 import warnings
 import validators
 import pyexcel_ods3 as pods
-# import pyexcel as pe
 from slugify import slugify
 import shutil
 from collections import OrderedDict
 from html import unescape
 import unicodedata
+from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+
 
 warnings.filterwarnings("ignore", category=UserWarning)
 def browser_init():
@@ -53,7 +54,6 @@ def browser_init():
     return webdriver.Chrome(service=Service(executable_path=os.path.join(os.getcwd(), "chromedriver", "chromedriver.exe")), options=options)
 
 
-
 def getlatestfile(folder):
     list_of_files = glob.glob(folder + os.sep + "*.pdf") # * means all if need specific format then *.csv
     return max(list_of_files, key=os.path.getctime)    
@@ -66,11 +66,9 @@ def parse(url, driver):
     time.sleep(2)
     curr=driver.current_window_handle
     title = driver.find_element(By.CSS_SELECTOR, "h1#model-title").text
-    # breakpoint()
     vendor = driver.find_element(By.XPATH, "/html/body/div[6]/button").get_attribute('data-brand')
-    # print(title)
-    # return
     diagramlist = []
+    
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
         WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
@@ -137,7 +135,7 @@ def parse(url, driver):
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
 
     # driver.quit()
-    return diagramlist
+    return diagramlist, title
 
 def main():
     parser = argparse.ArgumentParser(description="Catalog Product Downloader")
@@ -162,15 +160,22 @@ def main():
     
     driver = browser_init()
     driver.maximize_window()
-
+    
     for idx, url in enumerate(newlist):
-        if url[3] == 'NO':
+        merger = PdfMerger()
+        if url[2] == 'NO':
             try:
-                diagramlist = parse(url=url[2], driver=driver)
-                newlist[idx] = [url[0], url[1], url[2], 'SUCCESS']
+                diagramlist, title = parse(url=url[1], driver=driver)
+                for diagram in diagramlist:
+                    filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
+                    merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+                merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
+                link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
+                newlist[idx] = [url[0], url[1], 'YES', link]
                 diagramexist += diagramlist
-            except:
-                newlist[idx] = [url[0], url[1], url[2], 'FAILED']
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+                newlist[idx] = [url[0], url[1], 'FAILED']
                 # diagramexist += diagramlist
                 break
 
