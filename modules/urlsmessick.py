@@ -24,6 +24,9 @@ import validators
 import requests
 from pyexcel_ods3 import get_data, save_data
 from collections import OrderedDict
+from openpyxl import Workbook, load_workbook
+# If you need to get the column letter, also import this
+from openpyxl.utils import get_column_letter
 
 warnings.filterwarnings("ignore", category=UserWarning)
 # cookies = {
@@ -74,8 +77,18 @@ def parse():
     modelurls = []
     dlist = []
     data = OrderedDict()
-    dlist.append(["VENDOR", "URL", "ISDOWNLOAD", "LINK"])
+    dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
+
     no = 1
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Sheet1'
+    ws['A1'].value = "VENDOR"
+    ws['B1'].value = "MODEL NAME"
+    ws['C1'].value = "URL" 
+    ws['D1'].value = "ISDOWNLOAD"
+    ws['E1'].value = "LINK"
+
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
         vendorname = vendor.find_element(By.CSS_SELECTOR, "img").get_attribute('alt').replace('parts', "").strip()
