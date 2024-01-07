@@ -24,12 +24,6 @@ import validators
 import requests
 from pyexcel_ods3 import get_data, save_data
 from collections import OrderedDict
-from openpyxl import Workbook, load_workbook
-# If you need to get the column letter, also import this
-from openpyxl.utils import get_column_letter
-from html import unescape
-import unicodedata
-
 
 warnings.filterwarnings("ignore", category=UserWarning)
 # cookies = {
@@ -40,21 +34,13 @@ warnings.filterwarnings("ignore", category=UserWarning)
 #     # '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto',
 #     '_ga_YZFGTV3XRZ': 'GS1.1.1704154533.23.1.1704157025.6.0.0',
 # }
-# cookies = {
-#     'ab': 'stage-web-apps',
-#     '_ga': 'GA1.1.798189167.1703477051',
-#     '_gcl_au': '1.1.2118757811.1703477052',
-#     '_fbp': 'fb.1.1703732913826.708081806',
-#     '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiRff1tD0FFAu_HUpKxyMUIALdH8ZD3PODjXOPJOjCLVYU77bZQo0HW_s9WsjmgMG3UElP-gvUeG6K5sBKP2GC-_sOTryRgMMbI9CFdXnLqCeqlWhY7P84Kfz5sqesxP3R8',
-#     '_ga_YZFGTV3XRZ': 'GS1.1.1704344393.35.1.1704344415.38.0.0',
-# }
 cookies = {
     'ab': 'stage-web-apps',
     '_ga': 'GA1.1.798189167.1703477051',
     '_gcl_au': '1.1.2118757811.1703477052',
     '_fbp': 'fb.1.1703732913826.708081806',
-    '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiTNoqvv0LQvrzQ1k3uaK30aHpfeJY64fIRQBqpvNif32vG0cWZgq5pBMZH-AgKEUj9zVbYGjLXFmHs8kAm6OEI0_GU__zXwxDElW_eng5EDQkTT_iBtgOsSrD42vgfC5Js',
-    '_ga_YZFGTV3XRZ': 'GS1.1.1704604394.43.1.1704604408.46.0.0',
+    '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiRff1tD0FFAu_HUpKxyMUIALdH8ZD3PODjXOPJOjCLVYU77bZQo0HW_s9WsjmgMG3UElP-gvUeG6K5sBKP2GC-_sOTryRgMMbI9CFdXnLqCeqlWhY7P84Kfz5sqesxP3R8',
+    '_ga_YZFGTV3XRZ': 'GS1.1.1704344393.35.1.1704344415.38.0.0',
 }
 
 def parse():
@@ -87,19 +73,10 @@ def parse():
     vendorurls = []
     modelurls = []
     dlist = []
-    # data = OrderedDict()
-    # dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
+    data = OrderedDict()
+    dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
 
     no = 1
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'Sheet1'
-    ws['A1'].value = "VENDOR"
-    ws['B1'].value = "MODEL NAME"
-    ws['C1'].value = "URL" 
-    ws['D1'].value = "ISDOWNLOAD"
-    ws['E1'].value = "LINK"
-
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
         vendorname = vendor.find_element(By.CSS_SELECTOR, "img").get_attribute('alt').replace('parts', "").strip()
@@ -147,7 +124,7 @@ def parse():
                 eqids2 = response.json()
                 for eqid2 in eqids2:
                     theurl = f"https://messicks.com{eqid2['modelUrl']}"
-                    modelname = unicodedata.normalize('NFKC',unescape(eqid2['modelName']))
+                    modelname = eqid2['modelName']
                     dlist.append([vendorurl[1], modelname, theurl, 'NO'])
                     no += 1
                     vcount += 1
@@ -160,7 +137,7 @@ def parse():
                     eqids3 = response.json()
                     for eqid3 in eqids3:
                         theurl = f"https://messicks.com{eqid3['modelUrl']}"
-                        modelname = unicodedata.normalize('NFKC',unescape(eqid3['modelName']))
+                        modelname = eqid3['modelName']
                         dlist.append([vendorurl[1], modelname, theurl, 'NO'])
                         no += 1
                         vcount += 1
@@ -180,21 +157,12 @@ def parse():
         # break
         print(vcount)
 
-    for dt in dlist:
-        ws.append(dt)
-    
-    ws2 = wb.create_sheet("Sheet2")
-    ws2.append(['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK'])
-    ws3 = wb.create_sheet("Sheet3")
-    ws3.append(["file://<your_pdf_extract_location>"])
-    ws3.append(["file://<your_pdf_join_location>"])
 
-    # data.update({"Sheet1": dlist})
-    # data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
-    # data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
+    data.update({"Sheet1": dlist})
+    data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
+    data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
     driver.quit()
-    # save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
-    wb.save(s.ODF_RESULT_PATH + os.sep +"resulturls.xlsx")
+    save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
 
 
 def main():
