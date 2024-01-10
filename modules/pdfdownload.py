@@ -172,7 +172,7 @@ def main():
         merger = PdfMerger()
         if url[3] == 'NO':
             # try:
-                diagramlist, title = parse(url=url[1], driver=driver)
+                diagramlist, title = parse(url=url[2], driver=driver)
                 for diagram in diagramlist:
                     filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
                     merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
