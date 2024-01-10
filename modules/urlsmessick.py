@@ -179,6 +179,7 @@ def parse():
 
 
 def main():
+    print("new")
     parse()
     input("End Process..")    
 
