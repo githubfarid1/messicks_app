@@ -24,7 +24,7 @@ import validators
 import requests
 from pyexcel_ods3 import get_data, save_data
 from collections import OrderedDict
-# from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook, load_workbook
 # If you need to get the column letter, also import this
 from openpyxl.utils import get_column_letter
 from html import unescape
@@ -87,10 +87,18 @@ def parse():
     vendorurls = []
     modelurls = []
     dlist = []
-    data = OrderedDict()
-    dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
+    # data = OrderedDict()
+    # dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
 
     no = 1
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Sheet1'
+    ws['A1'].value = "VENDOR"
+    ws['B1'].value = "MODEL NAME"
+    ws['C1'].value = "URL" 
+    ws['D1'].value = "ISDOWNLOAD"
+    ws['E1'].value = "LINK"
 
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
@@ -171,11 +179,22 @@ def parse():
 
         # break
         print(vcount)
-    data.update({"Sheet1": dlist})
-    data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
-    data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
+
+    for dt in dlist:
+        ws.append(dt)
+    
+    ws2 = wb.create_sheet("Sheet2")
+    ws2.append(['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK'])
+    ws3 = wb.create_sheet("Sheet3")
+    ws3.append(["file://<your_pdf_extract_location>"])
+    ws3.append(["file://<your_pdf_join_location>"])
+
+    # data.update({"Sheet1": dlist})
+    # data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
+    # data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
     driver.quit()
-    save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
+    # save_data(s.ODF_RESULT_PATH + os.sep +"resulturls.ods", data)
+    wb.save(s.ODF_RESULT_PATH + os.sep +"resulturls.xlsx")
 
 
 def main():

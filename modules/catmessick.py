@@ -66,7 +66,10 @@ def parse(url):
     # breakpoint()
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        try:
+            WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        except:
+            breakpoint()
         time.sleep(2)
         if first:
             first = False

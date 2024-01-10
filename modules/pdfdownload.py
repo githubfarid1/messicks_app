@@ -76,11 +76,16 @@ def parse(url, driver):
             first = False
             firstopt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
             firstopt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
+            section, diagram  = firstopt1txt, firstopt2txt
+            filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+            if os.path.exists(s.PDF_EXTRACT_PATH + os.sep + filename):
+                continue
+
             driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
             time.sleep(3)
             time.sleep(random.randint(5, 7))
-            print("download for", title, firstopt1txt, firstopt2txt)
-            section, diagram  = firstopt1txt, firstopt2txt
+            print("download for", title, section, diagram)
+            # section, diagram  = firstopt1txt, firstopt2txt
             time.sleep(random.randint(2, 5))
             if  len(driver.window_handles) > 1:
                 for handle in driver.window_handles:
@@ -95,7 +100,7 @@ def parse(url, driver):
                             break
                 driver.switch_to.window(curr)
             else:
-                filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+                # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
                 shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
@@ -107,6 +112,10 @@ def parse(url, driver):
         if opt1txt == firstopt1txt and opt2txt == firstopt2txt:
             break
         # breakpoint()
+        section, diagram  = opt1txt, opt2txt
+        filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+        if os.path.exists(s.PDF_EXTRACT_PATH + os.sep + filename):
+            continue
         
         driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
         time.sleep(random.randint(5, 7))
