@@ -27,6 +27,8 @@ from collections import OrderedDict
 from html import unescape
 import unicodedata
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+import xlwings as xw
+import gspread
 
 warnings.filterwarnings("ignore", category=UserWarning)
 def browser_init():
@@ -57,7 +59,7 @@ def getlatestfile(folder):
     list_of_files = glob.glob(folder + os.sep + "*.pdf") # * means all if need specific format then *.csv
     return max(list_of_files, key=os.path.getctime)    
 
-def parse(url, driver):
+def parse(url, driver, xlsheet2):
     driver.get(url)
     firstopt1txt = ''
     firstopt2txt = ''
@@ -67,6 +69,7 @@ def parse(url, driver):
     title = driver.find_element(By.CSS_SELECTOR, "h1#model-title").text
     vendor = driver.find_element(By.XPATH, "/html/body/div[6]/button").get_attribute('data-brand')
     diagramlist = []
+    # lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
     
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
@@ -76,6 +79,7 @@ def parse(url, driver):
             first = False
             firstopt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
             firstopt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
+            # breakpoint()
             driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
             time.sleep(3)
             time.sleep(random.randint(5, 7))
@@ -94,12 +98,27 @@ def parse(url, driver):
                         if len(driver.window_handles) == 1:
                             break
                 driver.switch_to.window(curr)
+                xlsheet2.append_row([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), 'NOT FOUND'])
+                # xlsheet2[f"A{lastrow}"].value = vendor
+                # xlsheet2[f"B{lastrow}"].value = title 
+                # xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
+                # xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
+                # xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
             else:
                 filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
                 shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
+                # link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
                 diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+                xlsheet2.append_row([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+
+                # xlsheet2[f"A{lastrow}"].value = vendor
+                # xlsheet2[f"B{lastrow}"].value = title 
+                # xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
+                # xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
+                # xlsheet2[f"E{lastrow}"].value = link
+            # lastrow += 1
             continue
         opt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
         opt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
@@ -107,7 +126,6 @@ def parse(url, driver):
         if opt1txt == firstopt1txt and opt2txt == firstopt2txt:
             break
         # breakpoint()
-        
         driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
         time.sleep(random.randint(5, 7))
 
@@ -126,65 +144,94 @@ def parse(url, driver):
                     if len(driver.window_handles) == 1:
                         break
             driver.switch_to.window(curr)
+            xlsheet2.append_row([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), 'NOT FOUND'])
+
+            # xlsheet2[f"A{lastrow}"].value = vendor
+            # xlsheet2[f"B{lastrow}"].value = title 
+            # xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
+            # xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
+            # xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
         else:
             filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
             shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
             link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
-            diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+            # sheet.cell(row=row, column=11).value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
 
+            diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+            xlsheet2.append_row([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+
+            # xlsheet2[f"A{lastrow}"].value = vendor
+            # xlsheet2[f"B{lastrow}"].value = title 
+            # xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
+            # xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
+            # xlsheet2[f"E{lastrow}"].value = link
+        # lastrow += 1
     # driver.quit()
     return diagramlist, title
 
 def main():
-    parser = argparse.ArgumentParser(description="Catalog Product Downloader")
-    parser.add_argument('-i', '--input', type=str,help="Source File")
+    # parser = argparse.ArgumentParser(description="Catalog Product Downloader")
+    # parser.add_argument('-i', '--input', type=str,help="Source File")
     
-    args = parser.parse_args()
-    isExist = os.path.exists(args.input)
-    if isExist == False :
-        input('Please check the ODS file')
-        sys.exit()
+    # args = parser.parse_args()
+    # isExist = os.path.exists(args.input)
+    # if isExist == False :
+    #     input('Please check the ODS file')
+    #     sys.exit()
 
     windp = s.CHROME_DOWNLOAD_PATH
     for f in glob.glob(windp + os.sep + "*"):
         os.remove(f)
 
-    data = OrderedDict()
-    source = args.input
-    urllist = pods.get_data(afile=source)
-    newlist = urllist['Sheet1'].copy()
-    diagramexist = urllist['Sheet2'].copy()
-    filesetting = urllist['Sheet3'].copy()
-    
+    # source = args.input
     driver = browser_init()
     driver.maximize_window()
-    for idx, url in enumerate(newlist):
+
+    # print('Opening the Source Excel File...', end="", flush=True)
+    # xlbook = xw.Book(source)
+    # xlsheet1 = xlbook.sheets["Sheet1"]
+    # xlsheet2 = xlbook.sheets["Sheet2"]
+    # print('OK')
+
+    print('Connect to Google Sheet...', end="", flush=True)
+    gc = gspread.service_account(filename="creds.json")
+    wb = gc.open("resulturls")
+    ws1 = wb.worksheets()[0]
+    ws2 = wb.worksheets()[1]
+    ws2.get_all_values
+    print('Connected')
+    
+    # maxrow = xlsheet1.range('C' + str(xlsheet1.cells.last_cell.row)).end('up').row
+    maxrow = ws1.row_count
+
+    # breakpoint()
+    listsheet1 = ws1.get_all_values()
+    for idx, rec in enumerate(listsheet1):
+        if idx == 0:
+            continue
+
         merger = PdfMerger()
-        if url[2] == 'NO':
-            try:
-                diagramlist, title = parse(url=url[1], driver=driver)
-                for diagram in diagramlist:
-                    filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
-                    merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+        if  rec[3]  == 'NO':
+            diagramlist, title = parse(url=rec[2], driver=driver, xlsheet2=ws2)
+            for diagram in diagramlist:
+                filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
+                merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
-                newlist[idx] = [url[0], url[1], 'YES', link]
-                diagramexist += diagramlist
-            except Exception as err:
-                print(f"Unexpected {err=}, {type(err)=}")
-                newlist[idx] = [url[0], url[1], 'FAILED']
-                # diagramexist += diagramlist
-                break
-
-    # newlist.insert(0, ["NO", "VENDOR", "URL", "ISDOWNLOAD"])
-    # breakpoint()
-    data.update({"Sheet1": newlist})
-    data.update({"Sheet2": [x for x in diagramexist if x != []]})
-    data.update({"Sheet3": filesetting})
+                ws1.update_acell(f'D{idx+1}', 'YES')
+                ws1.update_acell(f'E{idx+1}', link)
 
 
-    pods.save_data(source, data)
+        # if xlsheet1[f'D{i}'].value == 'NO':
+        #     diagramlist, title = parse(url=xlsheet1[f'C{i}'].value, driver=driver, xlsheet2=xlsheet2)
+        #     for diagram in diagramlist:
+        #         filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
+        #         merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+        #         merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
+        #         link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
+        #         xlsheet1[f'D{i}'].value = 'YES'
+        #         xlsheet1[f'E{i}'].value = link
     driver.quit()
 
 
