@@ -178,11 +178,11 @@ def main():
                     merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
-                newlist[idx] = [url[0], url[1], 'YES', link]
+                newlist[idx] = [url[0], url[1], url[2], 'YES', link]
                 diagramexist += diagramlist
             except Exception as err:
                 print(f"Unexpected {err=}, {type(err)=}")
-                newlist[idx] = [url[0], url[1], 'FAILED']
+                newlist[idx] = [url[0], url[1], url[2], 'FAILED']
                 # diagramexist += diagramlist
                 break
 
