@@ -335,7 +335,6 @@ def run_module(comlist):
 		comall += com + " "
 	print(comall)
 
-
 def main():
 	window = Window()
 	window.mainloop()
