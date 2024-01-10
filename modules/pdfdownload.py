@@ -170,7 +170,7 @@ def main():
     driver.maximize_window()
     for idx, url in enumerate(newlist):
         merger = PdfMerger()
-        if url[2] == 'NO':
+        if url[3] == 'NO':
             try:
                 diagramlist, title = parse(url=url[1], driver=driver)
                 for diagram in diagramlist:
