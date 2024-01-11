@@ -171,7 +171,7 @@ def main():
     for idx, url in enumerate(newlist):
         merger = PdfMerger()
         if url[3] == 'NO':
-            # try:
+            try:
                 diagramlist, title = parse(url=url[2], driver=driver)
                 for diagram in diagramlist:
                     filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
@@ -180,9 +180,9 @@ def main():
                 link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
                 newlist[idx] = [url[0], url[1], url[2], 'YES', link]
                 diagramexist += diagramlist
-            # except Exception as err:
-                # print(f"Unexpected {err=}, {type(err)=}")
-                # newlist[idx] = [url[0], url[1], url[2], 'FAILED']
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+                newlist[idx] = [url[0], url[1], url[2], 'FAILED']
                 # diagramexist += diagramlist
                 # break
 
