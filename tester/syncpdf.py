@@ -24,6 +24,6 @@ for idx, ds in enumerate(sheet1):
         for f in glob.glob(s.PDF_EXTRACT_PATH + os.sep + filename.replace(".pdf", "")):
             print(f)
         
-        input()
+        input(filename)
 
 
