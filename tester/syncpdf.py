@@ -11,7 +11,7 @@ from collections import OrderedDict
 import settings as s
 import glob
 import shutil
-data = pods.get_data(afile=s.ODF_RESULT_PATH + os.sep + "resulturls2.ods")
+data = pods.get_data(afile=s.ODF_RESULT_PATH + os.sep + "resulturls.ods")
 sheet1 = data['Sheet1'].copy()
 sheet2 = data['Sheet2'].copy()
 for idx, ds in enumerate(sheet1):
