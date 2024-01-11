@@ -169,7 +169,6 @@ def main():
     backfile = "{}{}_backup{}".format(pathinput, os.path.splitext(fnameinput)[0], os.path.splitext(fnameinput)[1])
     shutil.copy(source, backfile)
     print('OK')
-    sys.exit()
     urllist = pods.get_data(afile=source)
     newlist = urllist['Sheet1'].copy()
     diagramexist = urllist['Sheet2'].copy()
