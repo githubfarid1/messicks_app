@@ -70,7 +70,10 @@ def parse(url, driver):
     
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        try:
+            WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        except:
+            pass
         time.sleep(2)
         if first:
             first = False
@@ -82,7 +85,6 @@ def parse(url, driver):
                 continue
 
             driver.find_element(By.CSS_SELECTOR, "span.print-pdf").click()
-            time.sleep(3)
             time.sleep(random.randint(5, 7))
             print("download for", title, section, diagram)
             # section, diagram  = firstopt1txt, firstopt2txt
@@ -161,6 +163,13 @@ def main():
 
     data = OrderedDict()
     source = args.input
+    print('Creating Backup File...', end="", flush=True)
+    fnameinput = os.path.basename(source)
+    pathinput = source[0:-len(fnameinput)]
+    backfile = "{}{}_backup{}".format(pathinput, os.path.splitext(fnameinput)[0], os.path.splitext(fnameinput)[1])
+    shutil.copy(source, backfile)
+    print('OK')
+    sys.exit()
     urllist = pods.get_data(afile=source)
     newlist = urllist['Sheet1'].copy()
     diagramexist = urllist['Sheet2'].copy()

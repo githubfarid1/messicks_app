@@ -55,7 +55,7 @@ sheet3 = data['Sheet3'].copy()
 driver = browser_init()
 driver.maximize_window()
 diagramlist = []
-diagramlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
+diagramlist.append(['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK'])
 for idx, ds in enumerate(sheet1):
     if idx == 0:
         continue
