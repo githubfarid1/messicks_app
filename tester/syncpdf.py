@@ -21,7 +21,7 @@ for idx, ds in enumerate(sheet1):
     #     break
     filename = slugify(f"{ds[0]}-{ds[1]}-parts") +".pdf"
     if os.path.exists(s.PDF_JOIN_PATH + os.sep + filename):
-        for f in glob.glob(s.PDF_EXTRACT_PATH + os.sep + filename.replace(".pdf", "")):
+        for f in glob.glob(s.PDF_EXTRACT_PATH + os.sep + filename.replace(".pdf", "") + "*.pdf"):
             print(f)
         
         input(filename)
