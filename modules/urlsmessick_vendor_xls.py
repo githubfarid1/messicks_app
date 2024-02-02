@@ -82,17 +82,6 @@ def parse():
     # breakpoint()
     vendorurls = []
     modelurls = []
-    dlist = []
-
-    no = 1
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'Sheet1'
-    ws['A1'].value = "VENDOR"
-    ws['B1'].value = "MODEL NAME"
-    ws['C1'].value = "URL" 
-    ws['D1'].value = "ISDOWNLOAD"
-    ws['E1'].value = "LINK"
 
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
@@ -105,6 +94,17 @@ def parse():
         # if idx != 2:
         #     continue
         dlist = []
+
+        no = 1
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'Sheet1'
+        ws['A1'].value = "VENDOR"
+        ws['B1'].value = "MODEL NAME"
+        ws['C1'].value = "URL" 
+        ws['D1'].value = "ISDOWNLOAD"
+        ws['E1'].value = "LINK"
+
         headers = {
             'authority': 'messicks.com',
             'accept': '*/*',
@@ -159,22 +159,7 @@ def parse():
                         dlist.append([vendorurl[1], modelname, theurl, 'NO'])
                         no += 1
                         vcount += 1
-
-
-        #FOR TESTER
-        #             if vcount >= 5:
-        #                 break
-        #         if vcount >= 5:
-        #             break
-        #     if vcount >= 5:
-        #         break
-        # if vcount >= 5:
-        #     break
-
-
-        # break
         print(vcount)
-
         for dt in dlist:
             ws.append(dt)
     
