@@ -14,17 +14,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager as CM
 import time
 from urllib.parse import urlparse
-from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 from selenium.webdriver.support.select import Select
-import random
 import settings as s
-import argparse
 import warnings
-import validators
 import requests
-from pyexcel_ods3 import get_data, save_data
-from collections import OrderedDict
-# from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook, load_workbook
 # If you need to get the column letter, also import this
 from openpyxl.utils import get_column_letter
 from html import unescape
@@ -32,7 +26,24 @@ import unicodedata
 from slugify import slugify
 
 
+
 warnings.filterwarnings("ignore", category=UserWarning)
+# cookies = {
+#     'ab': 'stage-web-apps',
+#     '_ga': 'GA1.1.798189167.1703477051',
+#     '_gcl_au': '1.1.2118757811.1703477052',
+#     '_fbp': 'fb.1.1703732913826.708081806',
+#     # '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto',
+#     '_ga_YZFGTV3XRZ': 'GS1.1.1704154533.23.1.1704157025.6.0.0',
+# }
+# cookies = {
+#     'ab': 'stage-web-apps',
+#     '_ga': 'GA1.1.798189167.1703477051',
+#     '_gcl_au': '1.1.2118757811.1703477052',
+#     '_fbp': 'fb.1.1703732913826.708081806',
+#     '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiRff1tD0FFAu_HUpKxyMUIALdH8ZD3PODjXOPJOjCLVYU77bZQo0HW_s9WsjmgMG3UElP-gvUeG6K5sBKP2GC-_sOTryRgMMbI9CFdXnLqCeqlWhY7P84Kfz5sqesxP3R8',
+#     '_ga_YZFGTV3XRZ': 'GS1.1.1704344393.35.1.1704344415.38.0.0',
+# }
 cookies = {
     'ab': 'stage-web-apps',
     '_ga': 'GA1.1.798189167.1703477051',
@@ -71,8 +82,17 @@ def parse():
     # breakpoint()
     vendorurls = []
     modelurls = []
+    dlist = []
 
     no = 1
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Sheet1'
+    ws['A1'].value = "VENDOR"
+    ws['B1'].value = "MODEL NAME"
+    ws['C1'].value = "URL" 
+    ws['D1'].value = "ISDOWNLOAD"
+    ws['E1'].value = "LINK"
 
     for vendor in vendors:
         vendorurl = vendor.get_attribute('href')
@@ -85,9 +105,6 @@ def parse():
         # if idx != 2:
         #     continue
         dlist = []
-        data = OrderedDict()
-        dlist.append(["VENDOR", "MODEL NAME", "URL", "ISDOWNLOAD", "LINK"])
-
         headers = {
             'authority': 'messicks.com',
             'accept': '*/*',
@@ -157,12 +174,18 @@ def parse():
 
         # break
         print(vcount)
-        data.update({"Sheet1": dlist})
-        data.update({"Sheet2": [['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK']]})
-        data.update({"Sheet3": [["file://<your_pdf_extract_location>"], ["file://<your_pdf_join_location>"]]})
-        save_data(s.ODF_RESULT_PATH + os.sep + slugify(vendorurl[1]) + ".ods", data)
-    driver.quit()
+
+        for dt in dlist:
+            ws.append(dt)
     
+        ws2 = wb.create_sheet("Sheet2")
+        ws2.append(['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK'])
+        ws3 = wb.create_sheet("Sheet3")
+        ws3.append(["file://<your_pdf_extract_location>"])
+        ws3.append(["file://<your_pdf_join_location>"])
+        wb.save(s.XLS_RESULT_PATH + os.sep +slugify(vendorurl[1]) + ".xlsx")
+    
+    driver.quit()
 
 
 def main():

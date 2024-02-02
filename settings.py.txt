@@ -9,4 +9,4 @@ CHROME_DOWNLOAD_PATH = os.getcwd() + os.sep + "pdfs_download"
 PDF_EXTRACT_PATH = os.getcwd() + os.sep + "pdfs_extract"
 ODF_RESULT_PATH = os.getcwd() + os.sep + "odfs_result"
 PDF_JOIN_PATH = os.getcwd() + os.sep + "pdfs_join"
-
+XLS_RESULT_PATH = os.getcwd() + os.sep + "xlss_result"

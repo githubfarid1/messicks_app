@@ -5,6 +5,7 @@
 /pdfs_extract
 /odfs_result
 /pdfs_join
+/xlss_result
 /chromedriver
 settings.py
 __pycache__
