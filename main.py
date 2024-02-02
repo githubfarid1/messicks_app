@@ -243,7 +243,7 @@ class GrabUrlsVendorFrame(ttk.Frame):
 
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
-			run_module(comlist=[PYLOC, "modules/urlsmessick_vendor.py"])
+			run_module(comlist=[PYLOC, "modules/urlsmessick_vendor_xls.py"])
 
 class MessickPdfDownload2Frame(ttk.Frame):
 	def __init__(self, window) -> None:
