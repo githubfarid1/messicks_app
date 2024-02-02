@@ -169,7 +169,7 @@ def main():
     args = parser.parse_args()
     isExist = os.path.exists(args.input)
     if isExist == False :
-        input('Please check the ODS file')
+        input('Please check the XLS file')
         sys.exit()
 
     windp = s.CHROME_DOWNLOAD_PATH
@@ -195,7 +195,7 @@ def main():
                 filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
                 merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
-                link = '=HYPERLINK(CONCATENATE($Sheet3.$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
+                link = '=HYPERLINK(CONCATENATE(Sheet3!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
                 xlsheet1[f'D{i}'].value = 'YES'
                 xlsheet1[f'E{i}'].value = link
     driver.quit()
