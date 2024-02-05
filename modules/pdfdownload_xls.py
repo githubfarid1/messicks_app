@@ -69,7 +69,8 @@ def parse(url, driver, xlsheet2):
     vendor = driver.find_element(By.XPATH, "/html/body/div[6]/button").get_attribute('data-brand')
     diagramlist = []
     lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
-    success, failed = 0
+    success = 0 
+    failed = 0
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
         WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
