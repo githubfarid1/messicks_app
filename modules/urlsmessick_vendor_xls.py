@@ -104,6 +104,7 @@ def parse():
         ws['C1'].value = "URL" 
         ws['D1'].value = "ISDOWNLOAD"
         ws['E1'].value = "LINK"
+        ws['F1'].value = "DESCRIPTION"
 
         headers = {
             'authority': 'messicks.com',

@@ -69,7 +69,7 @@ def parse(url, driver, xlsheet2):
     vendor = driver.find_element(By.XPATH, "/html/body/div[6]/button").get_attribute('data-brand')
     diagramlist = []
     lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
-    
+    success, failed = 0
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
         WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
@@ -102,6 +102,7 @@ def parse(url, driver, xlsheet2):
                 xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
                 xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
                 xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
+                failed += 1
             else:
                 filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
@@ -114,6 +115,7 @@ def parse(url, driver, xlsheet2):
                 xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
                 xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
                 xlsheet2[f"E{lastrow}"].value = link
+                success += 1
             lastrow += 1
             continue
         opt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
@@ -145,12 +147,12 @@ def parse(url, driver, xlsheet2):
             xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
             xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
             xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
+            failed += 1
         else:
             filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
             shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
-            # sheet.cell(row=row, column=11).value = '=HYPERLINK(CONCATENATE(CONFIG!A1, "{}")'.format(filelocation) + ', "LIHAT")'
 
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
             xlsheet2[f"A{lastrow}"].value = vendor
@@ -158,9 +160,10 @@ def parse(url, driver, xlsheet2):
             xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
             xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
             xlsheet2[f"E{lastrow}"].value = link
+            success += 1
         lastrow += 1
     # driver.quit()
-    return diagramlist, title
+    return diagramlist, title, success, failed
 
 def main():
     parser = argparse.ArgumentParser(description="Catalog Product Downloader")
@@ -190,14 +193,20 @@ def main():
     for i in range(2, maxrow + 1):
         merger = PdfMerger()
         if xlsheet1[f'D{i}'].value == 'NO':
-            diagramlist, title = parse(url=xlsheet1[f'C{i}'].value, driver=driver, xlsheet2=xlsheet2)
-            for diagram in diagramlist:
-                filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
-                merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+            diagramlist, title, success, failed = parse(url=xlsheet1[f'C{i}'].value, driver=driver, xlsheet2=xlsheet2)
+            if len(diagramlist > 0):
+                for diagram in diagramlist:
+                    filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
+                    merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
                 xlsheet1[f'D{i}'].value = 'YES'
                 xlsheet1[f'E{i}'].value = link
+                xlsheet1[f'F{i}'].value = f"PDF Download Success={success}, Failed={failed}"
+            else:
+                xlsheet1[f'D{i}'].value = 'YES'
+                xlsheet1[f'E{i}'].value = "FAILED"
+                xlsheet1[f'F{i}'].value = "No PDF can not be Downloaded"
     driver.quit()
 
 
