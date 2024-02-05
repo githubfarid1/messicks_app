@@ -71,9 +71,17 @@ def parse(url, driver, xlsheet2):
     lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
     success = 0 
     failed = 0
+    trial = 0
     while True:
         driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
-        WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+        try:
+            WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
+            trial = 0
+        except:
+            trial += 1
+            if trial == 3:
+                return diagramlist, title, success, failed
+                # break
         time.sleep(2)
         if first:
             first = False
