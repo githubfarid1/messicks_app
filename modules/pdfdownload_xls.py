@@ -195,7 +195,7 @@ def main():
         merger = PdfMerger()
         if xlsheet1[f'D{i}'].value == 'NO':
             diagramlist, title, success, failed = parse(url=xlsheet1[f'C{i}'].value, driver=driver, xlsheet2=xlsheet2)
-            if len(diagramlist > 0):
+            if len(diagramlist) > 0:
                 for diagram in diagramlist:
                     filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
                     merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
