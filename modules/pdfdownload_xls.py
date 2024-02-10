@@ -60,12 +60,12 @@ def getlatestfile(folder):
 
 def genfilename(title, section, diagram):
     filename = slugify("{}{}{}".format(title, section, diagram))
-    if len(filename) < 255:
+    if len(s.PDF_EXTRACT_PATH + os.sep + filename + ".pdf") < 255:
         return filename
     else:
         while True:
             second = str(int(time.time()))
-            newfname = filename[0:245] + second
+            newfname = filename[0:221] + second
             if os.path.exists(s.PDF_EXTRACT_PATH + os.sep + newfname + ".pdf"):
                 continue
             return newfname
