@@ -126,7 +126,7 @@ def parse(url, driver, xlsheet2):
                 failed += 1
             else:
                 # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
-                filename = genfilename(title, section, diagram) + ".pdf"
+                filename = genfilename(title, section, diagram)
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
                 shutil.copyfile(latestfile, filename)
                 # link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
@@ -172,7 +172,7 @@ def parse(url, driver, xlsheet2):
             failed += 1
         else:
             # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
-            filename = genfilename(title, section, diagram) + ".pdf"
+            filename = genfilename(title, section, diagram)
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
             shutil.copyfile(latestfile, filename)
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
