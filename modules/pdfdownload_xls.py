@@ -126,9 +126,10 @@ def parse(url, driver, xlsheet2):
                 failed += 1
             else:
                 # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
-                filename = genfilename(title, section, diagram)
+                pathname = genfilename(title, section, diagram)
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-                shutil.copyfile(latestfile, filename)
+                shutil.copyfile(latestfile, pathname)
+                filename = os.path.basename(pathname)
                 # link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
                 diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
@@ -172,9 +173,10 @@ def parse(url, driver, xlsheet2):
             failed += 1
         else:
             # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
-            filename = genfilename(title, section, diagram)
+            pathname = genfilename(title, section, diagram)
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-            shutil.copyfile(latestfile, filename)
+            shutil.copyfile(latestfile, pathname)
+            filename = os.path.basename(pathname)
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
 
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
