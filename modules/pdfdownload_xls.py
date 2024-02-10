@@ -59,16 +59,16 @@ def getlatestfile(folder):
     return max(list_of_files, key=os.path.getctime)    
 
 def genfilename(title, section, diagram):
-    filename = slugify("{}{}{}".format(title, section, diagram))
-    if len(s.PDF_EXTRACT_PATH + os.sep + filename + ".pdf") < 255:
-        return filename
+    pathname = s.PDF_EXTRACT_PATH + os.sep + slugify("{}{}{}".format(title, section, diagram))
+    if len(pathname) < 255:
+        return pathname + ".pdf"
     else:
         while True:
             second = str(int(time.time()))
-            newfname = filename[0:221] + second
-            if os.path.exists(s.PDF_EXTRACT_PATH + os.sep + newfname + ".pdf"):
+            newpathname = pathname[0:244] + second
+            if os.path.exists(newpathname + ".pdf"):
                 continue
-            return newfname
+            return newpathname + ".pdf"
 
 def parse(url, driver, xlsheet2):
     driver.get(url)
@@ -128,7 +128,7 @@ def parse(url, driver, xlsheet2):
                 # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
                 filename = genfilename(title, section, diagram) + ".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-                shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
+                shutil.copyfile(latestfile, filename)
                 # link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
                 diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
@@ -174,7 +174,7 @@ def parse(url, driver, xlsheet2):
             # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
             filename = genfilename(title, section, diagram) + ".pdf"
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
-            shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
+            shutil.copyfile(latestfile, filename)
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
 
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
