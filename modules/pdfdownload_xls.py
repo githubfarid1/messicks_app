@@ -58,6 +58,18 @@ def getlatestfile(folder):
     list_of_files = glob.glob(folder + os.sep + "*.pdf") # * means all if need specific format then *.csv
     return max(list_of_files, key=os.path.getctime)    
 
+def genfilename(title, section, diagram):
+    filename = slugify("{}{}{}".format(title, section, diagram))
+    if len(filename) < 255:
+        return filename
+    else:
+        while True:
+            second = str(int(time.time()))
+            newfname = filename[0:245] + second
+            if os.path.exists(s.PDF_EXTRACT_PATH + os.sep + newfname + ".pdf"):
+                continue
+            return newfname
+
 def parse(url, driver, xlsheet2):
     driver.get(url)
     firstopt1txt = ''
@@ -113,7 +125,8 @@ def parse(url, driver, xlsheet2):
                 xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
                 failed += 1
             else:
-                filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+                # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+                filename = genfilename(title, section, diagram) + ".pdf"
                 latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
                 shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
                 # link = '=HYPERLINK(CONCATENATE($Sheet3.$A$1,"{}"),"OPEN PDF")'.format(filename)
@@ -158,7 +171,8 @@ def parse(url, driver, xlsheet2):
             xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
             failed += 1
         else:
-            filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+            # filename = slugify("{}{}{}".format(title, section, diagram) )+".pdf"
+            filename = genfilename(title, section, diagram) + ".pdf"
             latestfile = getlatestfile(s.CHROME_DOWNLOAD_PATH)
             shutil.copyfile(latestfile, s.PDF_EXTRACT_PATH + os.sep + filename)
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
