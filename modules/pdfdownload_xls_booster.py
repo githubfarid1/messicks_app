@@ -111,7 +111,7 @@ def parse(url, driver, xlsheet2):
             pathname = genfilename(title, section, diagram)
             filename = os.path.basename(pathname)
             try:
-                print("download for", title, firstopt1txt, firstopt2txt, end="...", flush=True)
+                print("download for", title, firstopt1txt, firstopt2txt, end="... ", flush=True)
                 if not os.path.exists(pathname):
                     urlretrieve(dowloadurl, pathname)
                 print("OK")
@@ -146,7 +146,7 @@ def parse(url, driver, xlsheet2):
         pathname = genfilename(title, section, diagram)
         filename = os.path.basename(pathname)
         try:
-            print("download for", title, opt1txt, opt2txt, end="...", flush=True)
+            print("download for", title, opt1txt, opt2txt, end="... ", flush=True)
             if not os.path.exists(pathname):
                 urlretrieve(dowloadurl, pathname)
             print("OK")
