@@ -303,7 +303,7 @@ class MessickPdfDownload3Frame(ttk.Frame):
 		odsInputFile.grid(column = 0, row = 1, sticky = (W,E))
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
-			run_module(comlist=[PYLOC, "modules/pdfdownload_xls.py", "-i", kwargs['input']])
+			run_module(comlist=[PYLOC, "modules/pdfdownload_xls_booster.py", "-i", kwargs['input']])
 
 class FrameButton(ttk.Button):
 	def __init__(self, parent, window, **kwargs):

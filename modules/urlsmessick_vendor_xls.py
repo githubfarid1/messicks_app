@@ -130,6 +130,7 @@ def parse():
         # print(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/0')
         response = requests.get(f'https://messicks.com/api/vendor/equipmenttypes/{brandId}/0', cookies=cookies, headers=headers)
         eqids1 = response.json()
+        # breakpoint()
         vcount = 0
         for eqid1 in eqids1:
             eqidId1= eqid1['equipmentTypeId']
