@@ -114,7 +114,9 @@ def parse(url, driver, xlsheet2):
                 print("download for", title, firstopt1txt, firstopt2txt, end="... ", flush=True)
                 if not os.path.exists(pathname):
                     urlretrieve(dowloadurl, pathname)
-                print("OK")
+                    print("OK")
+                else:
+                    print("File Exists")
                 
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
                 diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
@@ -149,7 +151,10 @@ def parse(url, driver, xlsheet2):
             print("download for", title, opt1txt, opt2txt, end="... ", flush=True)
             if not os.path.exists(pathname):
                 urlretrieve(dowloadurl, pathname)
-            print("OK")
+                print("OK")
+            else:
+                print("File Exists")
+            
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
 
             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
@@ -204,7 +209,12 @@ def main():
             if len(diagramlist) > 0:
                 for diagram in diagramlist:
                     filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
-                    merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+                    try:
+                        merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
+                        print("merge", filename)
+                    except:
+                        breakpoint()
+
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
                 xlsheet1[f'D{i}'].value = 'YES'
