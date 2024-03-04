@@ -119,7 +119,7 @@ def parse(url, driver, xlsheet2):
                     print("File Exists")
                 
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
-                diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+                diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link, dowloadurl, pathname])
                 xlsheet2[f"A{lastrow}"].value = vendor
                 xlsheet2[f"B{lastrow}"].value = title 
                 xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
@@ -157,7 +157,7 @@ def parse(url, driver, xlsheet2):
             
             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
 
-            diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link])
+            diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link, dowloadurl, pathname])
             xlsheet2[f"A{lastrow}"].value = vendor
             xlsheet2[f"B{lastrow}"].value = title 
             xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
@@ -211,9 +211,10 @@ def main():
                     filename = str(diagram[4]).split(",")[1].replace('"',"").replace(")","")
                     try:
                         merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
-                        print("merge", filename)
+                        # print("merge", filename)
                     except:
-                        breakpoint()
+                        urlretrieve(diagram[5], diagram[6])
+                        # breakpoint()
 
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
                 link = '=HYPERLINK(CONCATENATE(Sheet3!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
