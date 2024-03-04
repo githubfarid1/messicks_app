@@ -214,6 +214,7 @@ def main():
                         # print("merge", filename)
                     except:
                         urlretrieve(diagram[5], diagram[6])
+                        merger.append(s.PDF_EXTRACT_PATH + os.sep + filename)
                         # breakpoint()
 
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
