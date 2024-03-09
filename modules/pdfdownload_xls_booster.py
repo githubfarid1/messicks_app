@@ -74,7 +74,9 @@ def genfilename(title, section, diagram):
 
 def parse(url, driver, xlsheet2):
     driver.get(url)
-    modelid = urlparse(url).path.split('/')[-1]
+    breakpoint()
+    # modelid = urlparse(url).path.split('/')[-1]
+
     firstopt1txt = ''
     firstopt2txt = ''
     first = True
@@ -113,7 +115,7 @@ def parse(url, driver, xlsheet2):
             try:
                 print("download for", title, firstopt1txt, firstopt2txt, end="... ", flush=True)
                 if not os.path.exists(pathname):
-                    breakpoint()
+                    # breakpoint()
                     urlretrieve(dowloadurl, pathname)
                     print("OK")
                 else:
