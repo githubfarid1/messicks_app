@@ -113,6 +113,7 @@ def parse(url, driver, xlsheet2):
             try:
                 print("download for", title, firstopt1txt, firstopt2txt, end="... ", flush=True)
                 if not os.path.exists(pathname):
+                    breakpoint()
                     urlretrieve(dowloadurl, pathname)
                     print("OK")
                 else:
