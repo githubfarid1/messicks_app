@@ -37,18 +37,7 @@ def genfilename(title, section, diagram):
                 continue
             return newpathname + ".pdf"
 
-def parse(url, modelid, xlsheet2):
-    # driver.get(url)
-    # modelid = driver.find_element(By.CSS_SELECTOR, "input#search-context").get_attribute('value').replace("diagram/", "")
-    # modelid = urlparse(url).path.split('/')[-1]
-
-    # firstopt1txt = ''
-    # firstopt2txt = ''
-    # first = True
-    # time.sleep(2)
-    # curr=driver.current_window_handle
-    # title = driver.find_element(By.CSS_SELECTOR, "h1#model-title").text
-    # vendor = driver.find_element(By.XPATH, "/html/body/div[6]/button").get_attribute('data-brand')
+def parse(modelid, xlsheet2):
     diagramlist = []
     lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
     success = 0 
@@ -89,94 +78,6 @@ def parse(url, modelid, xlsheet2):
             xlsheet2[f"H{lastrow}"].value = 'NOT FOUND'
             failed += 1
 
-    # while True:
-    #     WebDriverWait(driver, 60).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram")))
-    #     driver.find_element(By.CSS_SELECTOR, "span.ms-5 span.btn-prev-diagram").click()
-    #     try:
-    #         WebDriverWait(driver, 60).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.cc-part-tile")))
-    #         trial = 0
-    #     except:
-    #         trial += 1
-    #         if trial == 3:
-    #             return diagramlist, title, success, failed
-    #             # break
-        
-    #     # time.sleep(2)
-    #     if first:
-    #         first = False
-    #         firstopt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
-    #         firstopt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
-    #         # breakpoint()
-    #         diagramid = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.get_attribute('value')
-    #         dowloadurl = f'https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagramid}'
-    #         section, diagram  = firstopt1txt, firstopt2txt
-    #         pathname = genfilename(title, section, diagram)
-    #         filename = os.path.basename(pathname)
-    #         try:
-    #             print("download for", title, firstopt1txt, firstopt2txt, end="... ", flush=True)
-    #             if not os.path.exists(pathname):
-    #                 # breakpoint()
-    #                 urlretrieve(dowloadurl, pathname)
-    #                 print("OK")
-    #             else:
-    #                 print("File Exists")
-                
-    #             link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
-    #             diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link, dowloadurl, pathname])
-    #             xlsheet2[f"A{lastrow}"].value = vendor
-    #             xlsheet2[f"B{lastrow}"].value = title 
-    #             xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
-    #             xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
-    #             xlsheet2[f"E{lastrow}"].value = link
-    #             success += 1
-    #         except:
-    #             xlsheet2[f"A{lastrow}"].value = vendor
-    #             xlsheet2[f"B{lastrow}"].value = title 
-    #             xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
-    #             xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
-    #             xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
-    #             failed += 1
-
-    #         lastrow += 1
-    #         continue
-    #     opt1txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select ms-3 me-3 section-list']")).first_selected_option.text
-    #     opt2txt = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.text
-
-    #     if opt1txt == firstopt1txt and opt2txt == firstopt2txt:
-    #         break
-    #     # breakpoint()
-    #     diagramid = Select(driver.find_element(By.CSS_SELECTOR, "select[class='form-select diagram-list']")).first_selected_option.get_attribute('value')
-    #     dowloadurl = f'https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagramid}'
-    #     section, diagram  = opt1txt, opt2txt
-    #     pathname = genfilename(title, section, diagram)
-    #     filename = os.path.basename(pathname)
-    #     try:
-    #         print("download for", title, opt1txt, opt2txt, end="... ", flush=True)
-    #         if not os.path.exists(pathname):
-    #             urlretrieve(dowloadurl, pathname)
-    #             print("OK")
-    #         else:
-    #             print("File Exists")
-            
-    #         link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
-
-    #         diagramlist.append([vendor, title, unicodedata.normalize('NFKC',unescape(section)), unicodedata.normalize('NFKC',unescape(diagram)), link, dowloadurl, pathname])
-    #         xlsheet2[f"A{lastrow}"].value = vendor
-    #         xlsheet2[f"B{lastrow}"].value = title 
-    #         xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
-    #         xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
-    #         xlsheet2[f"E{lastrow}"].value = link
-    #         success += 1
-
-    #     except:
-    #         xlsheet2[f"A{lastrow}"].value = vendor
-    #         xlsheet2[f"B{lastrow}"].value = title 
-    #         xlsheet2[f"C{lastrow}"].value = unicodedata.normalize('NFKC',unescape(section))
-    #         xlsheet2[f"D{lastrow}"].value = unicodedata.normalize('NFKC',unescape(diagram))
-    #         xlsheet2[f"E{lastrow}"].value = 'NOT FOUND'
-    #         failed += 1
-        
-    #     lastrow += 1
 
     return diagramlist, success, failed
 
@@ -206,7 +107,7 @@ def main():
         title = vendor + " " + xlsheet1[f'C{i}'].value + " Parts"
         if xlsheet1[f'E{i}'].value == 'NO':
             print('search',xlsheet1[f'B{i}'].value)
-            diagramlist, success, failed = parse(url=xlsheet1[f'D{i}'].value, modelid=xlsheet1[f'B{i}'].value, xlsheet2=xlsheet2)
+            diagramlist, success, failed = parse(modelid=xlsheet1[f'B{i}'].value, xlsheet2=xlsheet2)
             # break
             # diagramlist.append([section, diagram, link, dowloadurl, pathname])
             if len(diagramlist) > 0:

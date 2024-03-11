@@ -192,8 +192,10 @@ def parse():
         ws3 = wb.create_sheet("Sheet3")
         ws3.append(["file://<your_pdf_extract_location>"])
         ws3.append(["file://<your_pdf_join_location>"])
+        print('Writing to file',slugify(vendorurl[1]) + ".xlsx",  end="...", flush=True)
         wb.save(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx")
-        sys.exit()    
+        print("OK")
+        # sys.exit()    
     driver.quit()
 
 
