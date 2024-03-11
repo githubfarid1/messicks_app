@@ -74,9 +74,12 @@ def genfilename(title, section, diagram):
 
 def parse(url, driver, xlsheet2):
     driver.get(url)
-    breakpoint()
-    modelid = driver.find_element(By.CSS_SELECTOR, "input#search-context").get_attribute('value').replace("diagram/", "")
-    # modelid = urlparse(url).path.split('/')[-1]
+    # breakpoint()
+    try:
+        modelid = driver.find_element(By.CSS_SELECTOR, "input#search-context").get_attribute('value').replace("diagram/", "")
+        # modelid = urlparse(url).path.split('/')[-1]
+    except:
+        return [], "", 0, 0
 
     firstopt1txt = ''
     firstopt2txt = ''
