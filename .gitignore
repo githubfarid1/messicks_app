@@ -6,6 +6,7 @@
 /odfs_result
 /pdfs_join
 /xlss_result
+/xlss_result_v2
 /chromedriver
 settings.py
 __pycache__

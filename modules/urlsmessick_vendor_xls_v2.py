@@ -25,25 +25,9 @@ from html import unescape
 import unicodedata
 from slugify import slugify
 from bs4 import BeautifulSoup
-
+import ast
 
 warnings.filterwarnings("ignore", category=UserWarning)
-# cookies = {
-#     'ab': 'stage-web-apps',
-#     '_ga': 'GA1.1.798189167.1703477051',
-#     '_gcl_au': '1.1.2118757811.1703477052',
-#     '_fbp': 'fb.1.1703732913826.708081806',
-#     # '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto',
-#     '_ga_YZFGTV3XRZ': 'GS1.1.1704154533.23.1.1704157025.6.0.0',
-# }
-# cookies = {
-#     'ab': 'stage-web-apps',
-#     '_ga': 'GA1.1.798189167.1703477051',
-#     '_gcl_au': '1.1.2118757811.1703477052',
-#     '_fbp': 'fb.1.1703732913826.708081806',
-#     '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiRff1tD0FFAu_HUpKxyMUIALdH8ZD3PODjXOPJOjCLVYU77bZQo0HW_s9WsjmgMG3UElP-gvUeG6K5sBKP2GC-_sOTryRgMMbI9CFdXnLqCeqlWhY7P84Kfz5sqesxP3R8',
-#     '_ga_YZFGTV3XRZ': 'GS1.1.1704344393.35.1.1704344415.38.0.0',
-# }
 cookies = {
     'ab': 'stage-web-apps',
     '_ga': 'GA1.1.798189167.1703477051',
@@ -100,17 +84,20 @@ def parse():
         ws = wb.active
         ws.title = 'Sheet1'
         ws['A1'].value = "VENDOR"
-        ws['B1'].value = "MODEL NAME"
-        ws['C1'].value = "URL" 
-        ws['D1'].value = "ISDOWNLOAD"
-        ws['E1'].value = "LINK"
-        ws['F1'].value = "DESCRIPTION"
+        ws['B1'].value = "MODEL ID"
+        ws['C1'].value = "MODEL NAME"
+        ws['D1'].value = "URL" 
+        ws['E1'].value = "ISDOWNLOAD"
+        ws['F1'].value = "LINK"
+        ws['G1'].value = "DESCRIPTION"
+
+        ws2 = wb.create_sheet("Sheet2")
+        ws2.append(['VENDOR','MODEL ID', 'DIAGRAM ID', 'NAME','SECTION', 'DIAGRAM',	'PDF URL', 'LINK'])
 
         headers = {
             'authority': 'messicks.com',
             'accept': '*/*',
             'accept-language': 'en-US,en;q=0.9,ja-JP;q=0.8,ja;q=0.7,id;q=0.6',
-            # 'cookie': 'ab=stage-web-apps; _ga=GA1.1.798189167.1703477051; _gcl_au=1.1.2118757811.1703477052; _fbp=fb.1.1703732913826.708081806; .AspNetCore.Antiforgery.VyLW6ORzMgk=CfDJ8KKvyj28jF5Ik7-myJ51XiThun0j6OjyoQeyuImmlypZedyWoBRLRjadyzu2ReoTaLVAFNiJeD-mg6qnDBvXnTzYkHQrkTGXz5wWmIZ58ihXBNDY6jE2dlLGmTCzQDne443QVhFeSwsPGs_HMlpOmto; _ga_YZFGTV3XRZ=GS1.1.1704154533.23.1.1704157025.6.0.0',
             'referer': f'{vendorurl[0]}',
             'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
             'sec-ch-ua-mobile': '?0',
@@ -144,8 +131,9 @@ def parse():
                 eqids2 = response.json()
                 for eqid2 in eqids2:
                     theurl = f"https://messicks.com{eqid2['modelUrl']}"
+                    # breakpoint()
                     modelname = unicodedata.normalize('NFKC',unescape(eqid2['modelName']))
-                    dlist.append([vendorurl[1], modelname, theurl, 'NO'])
+                    dlist.append([vendorurl[1], str(int(eqid2['modelId'])), modelname, theurl, 'NO'])
                     no += 1
                     vcount += 1
             else:    
@@ -158,21 +146,54 @@ def parse():
                     for eqid3 in eqids3:
                         theurl = f"https://messicks.com{eqid3['modelUrl']}"
                         modelname = unicodedata.normalize('NFKC',unescape(eqid3['modelName']))
-                        dlist.append([vendorurl[1], modelname, theurl, 'NO'])
+                        dlist.append([vendorurl[1], str(int(eqid3['modelId'])), modelname, theurl, 'NO'])
                         no += 1
                         vcount += 1
         print(vcount)
         for dt in dlist:
             ws.append(dt)
+        tot = len(dlist)
+        for idx, dt in enumerate(dlist):
+            # if idx == 20:
+            #     break
+            print(idx+1, '-', tot, 'Extracting Diagrams for', dt[2], end="...", flush=True)
+            response = requests.get(dt[3])
+            soup = BeautifulSoup(response.text, "html.parser")
+            script_tags = soup.find_all("script")
+            jscript = ""
+            for tag in script_tags:
+                if tag.text.find("var _modelId") != -1:
+                    jscript = tag.text
+                    break
+            secs = []
+            diags = []
+            modelid = ''
+            for script in jscript.split("\n"):
+                if "var _modelId" in script:
+                    modelid = script.replace("var _modelId = '", "").replace("';","").strip()
+                if "sections.push({" in script:
+                    secs.append(script.replace("sectionId", "'sectionId'").replace("name :", "'name':").replace('sections.push(', '')[:-2])
+                if "diagrams.push({" in script:
+                    diags.append(script.replace("sectionId", "'sectionId'").replace("diagramId", "'diagramId'").replace("name :", "'name':").replace('diagrams.push(', '')[:-2])
+            
+            for sec in secs:
+                secdict =  ast.literal_eval(sec)
+                for diag in diags:
+                    # breakpoint()
+                    diagdict = ast.literal_eval(diag)
+                    if secdict['sectionId'] == diagdict['sectionId']:
+                        dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
+                        ws2.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
+            
+            print("OK")
 
+            # breakpoint()
 
-        ws2 = wb.create_sheet("Sheet2")
-        ws2.append(['VENDOR','NAME','SECTION',	'DIAGRAM',	'LINK'])
         ws3 = wb.create_sheet("Sheet3")
         ws3.append(["file://<your_pdf_extract_location>"])
         ws3.append(["file://<your_pdf_join_location>"])
-        wb.save(s.XLS_RESULT_PATH + os.sep +slugify(vendorurl[1]) + ".xlsx")
-    
+        wb.save(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx")
+        sys.exit()    
     driver.quit()
 
 

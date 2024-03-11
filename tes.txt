@@ -1,0 +1,50 @@
+
+        var sections = [];
+        var diagrams = [];
+        var diagramImages = [];
+        var currentSection = 'notset';
+        var currentDiagram = '451776';
+        var currentIndex = -1;
+        var _modelId = '86240';
+        var _modelName = 'S6625 (72&amp;quot; UTILITY SCRAP GRAPPLE / SVL75)';
+        var _brandCode = '';
+        var _brandId = '1';
+        var _url = '/ku/86240';
+        var _brandName = 'Kubota';
+        var _search = '';
+
+sections.push({ sectionId: '228452', name : 'OPTION' });
+diagrams.push({ diagramId: '451775', name : 'I00100 UTILITY SCRAP GRAPPLE ASSEMBLY', sectionId: '228452' });
+diagramImages.push( { Image: { xmlns: "https://schemas.microsoft.com/deepzoom/2008",Url: "/image/diagram/451775/", Format: "jpg",Overlap: "2",TileSize: "256",Size: { Width:  "2000",Height: "2000" }} } );
+diagrams.push({ diagramId: '451776', name : 'I00200 HYDRAULIC CYLINDER ASSEMBLY[COMPONENT PART]', sectionId: '228452' });
+diagramImages.push( { Image: { xmlns: "https://schemas.microsoft.com/deepzoom/2008",Url: "/image/diagram/451776/", Format: "jpg",Overlap: "2",TileSize: "256",Size: { Width:  "2000",Height: "2000" }} } );
+
+        var tileSources = [];
+        for (var i = 0; i < diagramImages.length; i++) {
+            tileSources.push(
+                {
+                    tileSource: diagramImages[i],
+                    x: 0,
+                }
+            )
+        }
+
+        $(document).ready(function () {
+            //KU/84542?sectionId=215158&diagramId=327053
+            var urlParams = new URLSearchParams(window.location.search);
+            var diagram = urlParams.get('diagramId');
+            var section = urlParams.get('sectionId');
+            if ((section) && (diagram)) { 
+                setDiagram(diagram+'');
+            }
+            console.log('select model',_modelId, _modelName, _brandName, _brandId, _url, '', false);
+            selectModel(_modelId, _modelName, _brandName, _brandId, _url, '', false);
+            $('.global-search').val(_search);
+            _modelSearch = true;
+
+            if ($('#results').length > 0) {
+                loadSearchResults(1, 'full', false);
+            }
+        });
+
+    
