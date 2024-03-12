@@ -37,6 +37,11 @@ cookies = {
     '_ga_YZFGTV3XRZ': 'GS1.1.1704604394.43.1.1704604408.46.0.0',
 }
 
+def createSheet(wb):
+    newsheet = wb.create_sheet("Sheet2")
+    newsheet.append(['VENDOR','MODEL ID', 'DIAGRAM ID', 'NAME','SECTION', 'DIAGRAM',	'PDF URL', 'LINK'])
+    return newsheet
+
 def parse():
     cud = s.CHROME_USER_DATA
     cp = s.CHROME_PROFILE
@@ -75,14 +80,15 @@ def parse():
     # print(vendorurls)
     # sys.exit()
     for idx, vendorurl in enumerate(vendorurls):
-        if idx == 0:
+        input(os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"))
+        if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             continue
-        dlist = []
 
+        dlist = []
         no = 1
         wb = Workbook()
         ws = wb.active
-        ws.title = 'Sheet1'
+        ws.title = 'PDF '
         ws['A1'].value = "VENDOR"
         ws['B1'].value = "MODEL ID"
         ws['C1'].value = "MODEL NAME"
