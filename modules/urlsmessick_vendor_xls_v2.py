@@ -194,8 +194,11 @@ def parse():
                     try:
                         diagdict = ast.literal_eval(diag)
                     except:
-                        diagdict = ast.literal_eval(diag.replace("\\","\\\\"))
-                        # diagdict = ast.literal_eval(unescape(diag))
+                        try:
+                            diagdict = ast.literal_eval(diag.replace("\\","\\\\"))
+                            # diagdict = ast.literal_eval(unescape(diag))
+                        except:
+                            breakpoint()
                     if secdict['sectionId'] == diagdict['sectionId']:
                         dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
                         ws2.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
