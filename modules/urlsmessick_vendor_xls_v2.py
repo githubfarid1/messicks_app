@@ -75,8 +75,8 @@ def parse():
     # print(vendorurls)
     # sys.exit()
     for idx, vendorurl in enumerate(vendorurls):
-        # if idx != 2:
-        #     continue
+        if idx == 0:
+            continue
         dlist = []
 
         no = 1
@@ -177,10 +177,17 @@ def parse():
                     diags.append(script.replace("sectionId", "'sectionId'").replace("diagramId", "'diagramId'").replace("name :", "'name':").replace('diagrams.push(', '')[:-2])
             
             for sec in secs:
-                secdict =  ast.literal_eval(sec)
+                try:
+                    secdict =  ast.literal_eval(sec)
+                except:
+                    secdict =  ast.literal_eval(unescape(sec))
+
                 for diag in diags:
                     # breakpoint()
-                    diagdict = ast.literal_eval(diag)
+                    try:
+                        diagdict = ast.literal_eval(diag)
+                    except:
+                        diagdict = ast.literal_eval(unescape(diag))
                     if secdict['sectionId'] == diagdict['sectionId']:
                         dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
                         ws2.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
