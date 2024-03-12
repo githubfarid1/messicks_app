@@ -80,7 +80,6 @@ def parse():
     # print(vendorurls)
     # sys.exit()
     for idx, vendorurl in enumerate(vendorurls):
-        input(os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"))
         if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             continue
 
