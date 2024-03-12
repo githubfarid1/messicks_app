@@ -187,6 +187,7 @@ def parse():
                     try:
                         diagdict = ast.literal_eval(diag)
                     except:
+                        breakpoint()
                         diagdict = ast.literal_eval(unescape(diag))
                     if secdict['sectionId'] == diagdict['sectionId']:
                         dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
