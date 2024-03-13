@@ -37,28 +37,29 @@ def genfilename(title, section, diagram):
                 continue
             return newpathname + ".pdf"
 
-def parse(modelid, xlsheet2):
+def parse(modelid, datalist, xlbook):
     diagramlist = []
-    lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
+    # for sheet in xlsheets:
+    modeldata = [item for item in datalist if item["modelid"] == modelid]
+    # lastrow = xlsheet2.range('A' + str(xlsheet2.cells.last_cell.row)).end('up').row + 1
     success = 0 
     failed = 0
-    trial = 0
-    first = True
-    start = 0
-    end = 0
+    # first = True
+    # start = 0
+    # end = 0
     # breakpoint()
-    for row in range(2, lastrow + 1):
-        if first and xlsheet2[f'B{row}'].value == modelid:
-            first = False
-            start = row
-        if not first and xlsheet2[f'B{row}'].value != modelid:
-            end = row
-            break
+    # for row in range(2, lastrow + 1):
+    #     if first and xlsheet2[f'B{row}'].value == modelid:
+    #         first = False
+    #         start = row
+    #     if not first and xlsheet2[f'B{row}'].value != modelid:
+    #         end = row
+    #         break
     
-    for row in range(start, end):
+    for row in modeldata:
         # print(xlsheet2[f'B{row}'].value)
-        dowloadurl = xlsheet2[f'G{row}'].value
-        title, section, diagram  = xlsheet2[f'D{row}'].value, xlsheet2[f'E{row}'].value, xlsheet2[f'F{row}'].value
+        dowloadurl = row['pdfurl']
+        title, section, diagram  = row['name'], row['section'], row['diagram']
         pathname = genfilename(title, section, diagram)
         filename = os.path.basename(pathname)
         try:
@@ -69,13 +70,13 @@ def parse(modelid, xlsheet2):
                 print("OK")
             else:
                 print("File Exists")
-            link = '=HYPERLINK(CONCATENATE(Sheet3!$A$1,"{}"),"OPEN PDF")'.format(filename)
+            link = '=HYPERLINK(CONCATENATE(Setting!$A$1,"{}"),"OPEN PDF")'.format(filename)
             diagramlist.append([section, diagram, link, dowloadurl, pathname])
-            xlsheet2[f"H{row}"].value = link
+            xlbook.sheets[f"PDF-{row['sheetnum']}"][f"H{row['rownum']}"].value = link
             success += 1
 
         except:
-            xlsheet2[f"H{lastrow}"].value = 'NOT FOUND'
+            xlbook.sheets[f"PDF-{row['sheetnum']}"][f"H{row['rownum']}"].value = 'NOT FOUND'
             failed += 1
 
 
@@ -96,8 +97,32 @@ def main():
     # driver.maximize_window()
     print('Opening the Source Excel File...', end="", flush=True)
     xlbook = xw.Book(source)
-    xlsheet1 = xlbook.sheets["Sheet1"]
-    xlsheet2 = xlbook.sheets["Sheet2"]
+    xlsheet1 = xlbook.sheets["Main-PDF"]
+    xlsheets = [s for s in xlbook.sheets]
+    detailsheets = []
+    datalist = []
+    for sh in xlsheets:
+        if "PDF-" in sh.name:
+            detailsheets.append(sh)
+    for idx, sh in enumerate(detailsheets):
+        lastrow = sh.range('A' + str(sh.cells.last_cell.row)).end('up').row + 1
+        for i in range(2, lastrow):
+            mdict = {
+                "rownum": i,
+                "sheetnum": idx + 1,
+                "vendor": sh[f'A{i}'].value,
+                "modelid": sh[f'B{i}'].value,
+                "diagramid": sh[f'C{i}'].value,
+                "name": sh[f'D{i}'].value,
+                "section": sh[f'E{i}'].value,
+                "diagram": sh[f'F{i}'].value,
+                "pdfurl": sh[f'G{i}'].value,
+
+            }
+            datalist.append(mdict)
+    # breakpoint()
+               
+    # xlsheet2 = xlbook.sheets["Sheet2"]
     print('OK')
     maxrow = xlsheet1.range('C' + str(xlsheet1.cells.last_cell.row)).end('up').row
     # breakpoint()
@@ -107,7 +132,7 @@ def main():
         title = vendor + " " + xlsheet1[f'C{i}'].value + " Parts"
         if xlsheet1[f'E{i}'].value == 'NO':
             print('search',xlsheet1[f'B{i}'].value)
-            diagramlist, success, failed = parse(modelid=xlsheet1[f'B{i}'].value, xlsheet2=xlsheet2)
+            diagramlist, success, failed = parse(modelid=xlsheet1[f'B{i}'].value, datalist=datalist, xlbook=xlbook)
             # break
             # diagramlist.append([section, diagram, link, dowloadurl, pathname])
             if len(diagramlist) > 0:
@@ -122,7 +147,7 @@ def main():
                         # breakpoint()
 
                 merger.write(s.PDF_JOIN_PATH + os.sep + slugify(title) + ".pdf")
-                link = '=HYPERLINK(CONCATENATE(Sheet3!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
+                link = '=HYPERLINK(CONCATENATE(Setting!$A$2,"{}"),"OPEN PDF")'.format(slugify(title) + ".pdf")
                 xlsheet1[f'E{i}'].value = 'YES'
                 xlsheet1[f'F{i}'].value = link
                 xlsheet1[f'G{i}'].value = f"PDF Download Success={success}, Failed={failed}"

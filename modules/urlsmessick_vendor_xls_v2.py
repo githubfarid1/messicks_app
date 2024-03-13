@@ -36,9 +36,9 @@ cookies = {
     '.AspNetCore.Antiforgery.VyLW6ORzMgk': 'CfDJ8KKvyj28jF5Ik7-myJ51XiTNoqvv0LQvrzQ1k3uaK30aHpfeJY64fIRQBqpvNif32vG0cWZgq5pBMZH-AgKEUj9zVbYGjLXFmHs8kAm6OEI0_GU__zXwxDElW_eng5EDQkTT_iBtgOsSrD42vgfC5Js',
     '_ga_YZFGTV3XRZ': 'GS1.1.1704604394.43.1.1704604408.46.0.0',
 }
-
-def createSheet(wb):
-    newsheet = wb.create_sheet("Sheet2")
+MAXROW=100
+def createSheet(wb, no):
+    newsheet = wb.create_sheet("PDF-" + str(no))
     newsheet.append(['VENDOR','MODEL ID', 'DIAGRAM ID', 'NAME','SECTION', 'DIAGRAM',	'PDF URL', 'LINK'])
     return newsheet
 
@@ -79,15 +79,17 @@ def parse():
 
     # print(vendorurls)
     # sys.exit()
+    input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
+        if vendorurl[1] != 'Befco':
+            continue
         if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             continue
-
         dlist = []
         no = 1
         wb = Workbook()
         ws = wb.active
-        ws.title = 'PDF '
+        ws.title = 'Main-PDF'
         ws['A1'].value = "VENDOR"
         ws['B1'].value = "MODEL ID"
         ws['C1'].value = "MODEL NAME"
@@ -96,8 +98,8 @@ def parse():
         ws['F1'].value = "LINK"
         ws['G1'].value = "DESCRIPTION"
 
-        ws2 = wb.create_sheet("Sheet2")
-        ws2.append(['VENDOR','MODEL ID', 'DIAGRAM ID', 'NAME','SECTION', 'DIAGRAM',	'PDF URL', 'LINK'])
+        # ws2 = wb.create_sheet("Sheet2")
+        # ws2.append(['VENDOR','MODEL ID', 'DIAGRAM ID', 'NAME','SECTION', 'DIAGRAM',	'PDF URL', 'LINK'])
 
         headers = {
             'authority': 'messicks.com',
@@ -158,6 +160,9 @@ def parse():
         for dt in dlist:
             ws.append(dt)
         tot = len(dlist)
+        rownum = 0
+        sheetnum = 1
+        newsheet = createSheet(wb=wb, no=sheetnum)
         for idx, dt in enumerate(dlist):
             # if idx == 20:
             #     break
@@ -200,14 +205,19 @@ def parse():
                         except:
                             continue
                     if secdict['sectionId'] == diagdict['sectionId']:
+                        rownum += 1
                         dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
-                        ws2.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
-            
+                        newsheet.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
+                        if rownum == MAXROW:
+                            # print('new sheet')
+                            sheetnum += 1
+                            rownum = 0
+                            newsheet = createSheet(wb=wb, no=sheetnum)
             print("OK")
 
             # breakpoint()
 
-        ws3 = wb.create_sheet("Sheet3")
+        ws3 = wb.create_sheet("Setting")
         ws3.append(["file://<your_pdf_extract_location>"])
         ws3.append(["file://<your_pdf_join_location>"])
         print('Writing to file',slugify(vendorurl[1]) + ".xlsx",  end="...", flush=True)
