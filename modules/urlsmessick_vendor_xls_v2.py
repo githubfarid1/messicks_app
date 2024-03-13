@@ -79,7 +79,7 @@ def parse():
 
     # print(vendorurls)
     # sys.exit()
-    input(vendorurls)
+    # input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
         if vendorurl[1] != 'New Holland':
             continue
