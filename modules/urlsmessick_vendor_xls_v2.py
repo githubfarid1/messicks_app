@@ -81,7 +81,7 @@ def parse():
     # sys.exit()
     input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
-        if vendorurl[1] != 'Befco':
+        if vendorurl[1] != 'New Holland':
             continue
         if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             continue
