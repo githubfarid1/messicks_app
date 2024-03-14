@@ -81,8 +81,8 @@ def parse():
     # sys.exit()
     # input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
-        # if vendorurl[1] != 'Case IH':
-        #     continue
+        if vendorurl[1] != 'Befco':
+            continue
         if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             print(vendorurl[1], "Skipped (File Found)")
             continue
@@ -208,7 +208,7 @@ def parse():
                     if secdict['sectionId'] == diagdict['sectionId']:
                         rownum += 1
                         dowloadurl = f"https://messicks.com/diagram/pdf?modelid={modelid}&diagramid={diagdict['diagramId']}"
-                        newsheet.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'])), unicodedata.normalize('NFKC',unescape(diagdict['name']) ), dowloadurl])
+                        newsheet.append([dt[0], modelid, diagdict['diagramId'], dt[0]+ " " + dt[2] + " Parts", unicodedata.normalize('NFKC',unescape(secdict['name'].strip())), unicodedata.normalize('NFKC',unescape(diagdict['name'].strip()) ), dowloadurl])
                         if rownum == MAXROW:
                             # print('new sheet')
                             sheetnum += 1
