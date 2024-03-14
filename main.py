@@ -107,8 +107,10 @@ class MainFrame(ttk.Frame):
 		extractButton = FrameButton(self, window, text="Extract PDF Diagram", class_frame=ExtractPdfFrame)
 		graburlButton = FrameButton(self, window, text="Grab URLs", class_frame=GrabUrlsFrame)
 		graburlVendorButton = FrameButton(self, window, text="Grab URLs By Vendor", class_frame=GrabUrlsVendorFrame)
-
 		pdfDownloadButton = FrameButton(self, window, text="Download PDF Diagram by File input", class_frame=MessickPdfDownload3Frame)
+
+		graburlVendor2Button = FrameButton(self, window, text="Grab URLs By Vendor ver.2", class_frame=GrabUrlsVendor2Frame)
+		pdfDownload2Button = FrameButton(self, window, text="Download PDF Diagram by File input ver.2", class_frame=MessickPdfDownload4Frame)
 
 		# # layout
 		titleLabel.grid(column = 0, row = 0, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
@@ -117,6 +119,8 @@ class MainFrame(ttk.Frame):
 		graburlButton.grid(column = 0, row = 3, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		graburlVendorButton.grid(column = 0, row = 4, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 		pdfDownloadButton.grid(column = 0, row = 5, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
+		graburlVendor2Button.grid(column = 0, row = 6, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
+		pdfDownload2Button.grid(column = 0, row = 7, sticky=(W, E, N, S), padx=15, pady=5, columnspan=3)
 
 
 class MessickPdfDownloadFrame(ttk.Frame):
@@ -304,6 +308,67 @@ class MessickPdfDownload3Frame(ttk.Frame):
 	def run_process(self, **kwargs):
 			# messagebox.showwarning(title='Warning', message='')
 			run_module(comlist=[PYLOC, "modules/pdfdownload_xls_booster.py", "-i", kwargs['input']])
+
+class GrabUrlsVendor2Frame(ttk.Frame):
+	def __init__(self, window) -> None:
+		super().__init__(window)
+		# configure
+		self.grid(column=0, row=0, sticky=(N, E, W, S), columnspan=4)
+		self.config(padding="20 20 20 20", borderwidth=1, relief='groove')
+
+		self.columnconfigure(0, weight=1)
+		self.rowconfigure(0, weight=1)
+		self.rowconfigure(1, weight=1)
+		self.rowconfigure(2, weight=1)
+		self.rowconfigure(3, weight=1)
+		self.rowconfigure(4, weight=1)
+		self.rowconfigure(5, weight=1)
+		
+		# populate
+		titleLabel = TitleLabel(self, text="Grab URLs By Vendor ver.2")
+		closeButton = CloseButton(self)
+
+		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process())
+		
+		# layout
+		titleLabel.grid(column = 0, row = 0, sticky = (W, E, N, S))
+		runButton.grid(column = 0, row = 5, sticky = (E))
+		closeButton.grid(column = 0, row = 6, sticky = (E, N, S))
+
+	def run_process(self, **kwargs):
+			# messagebox.showwarning(title='Warning', message='')
+			run_module(comlist=[PYLOC, "modules/urlsmessick_vendor_xls_v2.py"])
+
+class MessickPdfDownload4Frame(ttk.Frame):
+	def __init__(self, window) -> None:
+		super().__init__(window)
+		# configure
+		self.grid(column=0, row=0, sticky=(N, E, W, S), columnspan=4)
+		self.config(padding="20 20 20 20", borderwidth=1, relief='groove')
+
+		self.columnconfigure(0, weight=1)
+		self.rowconfigure(0, weight=1)
+		self.rowconfigure(1, weight=1)
+		self.rowconfigure(2, weight=1)
+		self.rowconfigure(3, weight=1)
+		self.rowconfigure(4, weight=1)
+		self.rowconfigure(5, weight=1)
+		
+		# populate
+		titleLabel = TitleLabel(self, text="Download PDF Diagram by File input ver.2")
+		odsInputFile = FileChooserFrame(self, btype="file", label="Select XLS Input File:", filetypes=(("xls files", "*.xlsx"),("all files", "*.*")))
+		closeButton = CloseButton(self)
+		runButton = ttk.Button(self, text='Run Process', command = lambda:self.run_process(input=odsInputFile.filename))
+		
+		# layout
+		titleLabel.grid(column = 0, row = 0, sticky = (W, E, N, S))
+		runButton.grid(column = 0, row = 5, sticky = (E))
+		closeButton.grid(column = 0, row = 6, sticky = (E, N, S))
+		odsInputFile.grid(column = 0, row = 1, sticky = (W,E))
+	def run_process(self, **kwargs):
+			# messagebox.showwarning(title='Warning', message='')
+			run_module(comlist=[PYLOC, "modules/pdfdownload_xls_booster_v2.py", "-i", kwargs['input']])
+
 
 class FrameButton(ttk.Button):
 	def __init__(self, parent, window, **kwargs):
