@@ -148,7 +148,14 @@ def parse(driver):
             # if idx == 20:
             #     break
             print(idx+1, '-', tot, 'Extracting Diagrams for', dt[2], end="...", flush=True)
-            response = requests.get(dt[3])
+            while True:
+                try:
+                    response = requests.get(dt[3])
+                    break
+                except:
+                    time.sleep(2)
+                    continue
+            
             soup = BeautifulSoup(response.text, "html.parser")
             script_tags = soup.find_all("script")
             jscript = ""
@@ -230,15 +237,15 @@ def main():
     options.add_experimental_option("prefs", profile)
 
     driver = webdriver.Chrome(service=Service(executable_path=os.path.join(os.getcwd(), "chromedriver", "chromedriver.exe")), options=options)
-
-    while True:
-        try:
-            parse(driver)
-            input("End Process..")
-            break    
-        except:
-            driver.quit()
-            continue
+    parse(driver)
+    # while True:
+    #     try:
+    #         parse(driver)
+    #         input("End Process..")
+    #         break    
+    #     except:
+    #         driver.quit()
+    #         continue
     
 if __name__ == '__main__':
     main()
