@@ -229,8 +229,13 @@ def parse():
 
 
 def main():
-    parse()
-    input("End Process..")    
-
+    while True:
+        try:
+            parse()
+            input("End Process..")
+            break    
+        except:
+            continue
+    
 if __name__ == '__main__':
     main()
