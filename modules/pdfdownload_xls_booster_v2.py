@@ -22,6 +22,7 @@ from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 import xlwings as xw
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
+from openpyxl import Workbook, load_workbook
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -96,43 +97,79 @@ def main():
     # driver = browser_init()
     # driver.maximize_window()
     print('Opening the Source Excel File...', end="", flush=True)
+    # breakpoint()
+
+
     xlbook = xw.Book(source)
     xlsheet1 = xlbook.sheets["Main-PDF"]
-    xlsheets = [s for s in xlbook.sheets]
-    detailsheets = []
-    datalist = []
-    totalrow = 0
-    for sh in xlsheets:
-        if "PDF-" in sh.name:
-            detailsheets.append(sh)
-            totalrow += sh.range('A' + str(sh.cells.last_cell.row)).end('up').row - 1
     print("OK")
-    # breakpoint()
-    print('Mount all data to memory...')
+    print('Mount all data to memory...', end="", flush=True)
     time.sleep(1)
-    recno = 0
-    for idx, sh in enumerate(detailsheets):
-        lastrow = sh.range('A' + str(sh.cells.last_cell.row)).end('up').row + 1
-        for i in range(2, lastrow):
-            recno += 1
+    pyxl = load_workbook(filename=source, read_only=True, data_only=True)
+    sheetdata = []
+    for sheetname in pyxl.sheetnames:
+        if "PDF-" in sheetname:
+            sheetdata.append(pyxl[sheetname])
+    datalist = []
+    for idx, sh in enumerate(sheetdata):
+        first = True
+        for rownum, row in enumerate(sh):
+            if first:
+                first = False
+                continue
             mdict = {
-                "rownum": i,
+                "rownum": rownum + 1,
                 "sheetnum": idx + 1,
-                "vendor": sh[f'A{i}'].value,
-                "modelid": sh[f'B{i}'].value,
-                "diagramid": sh[f'C{i}'].value,
-                "name": sh[f'D{i}'].value,
-                "section": sh[f'E{i}'].value,
-                "diagram": sh[f'F{i}'].value,
-                "pdfurl": sh[f'G{i}'].value,
-
+                "vendor": row[0].value,
+                "modelid": row[1].value,
+                "diagramid": row[2].value,
+                "name": row[3].value,
+                "section": row[4].value,
+                "diagram": row[5].value,
+                "pdfurl": row[6].value,
             }
-            print('mount record', recno, '-', totalrow)
             datalist.append(mdict)
-    # breakpoint()
+    print("OK")
+
+    # breakpoint()        
+#-------------------------------------------    
+    # xlbook = xw.Book(source)
+    # xlsheet1 = xlbook.sheets["Main-PDF"]
+    # xlsheets = [s for s in xlbook.sheets]
+    # detailsheets = []
+    # datalist = []
+    # totalrow = 0
+    # for sh in xlsheets:
+    #     if "PDF-" in sh.name:
+    #         detailsheets.append(sh)
+    #         totalrow += sh.range('A' + str(sh.cells.last_cell.row)).end('up').row - 1
+    # print("OK")
+    # # breakpoint()
+    # print('Mount all data to memory...')
+    # time.sleep(1)
+    # recno = 0
+    # for idx, sh in enumerate(detailsheets):
+    #     lastrow = sh.range('A' + str(sh.cells.last_cell.row)).end('up').row + 1
+    #     for i in range(2, lastrow):
+    #         recno += 1
+    #         mdict = {
+    #             "rownum": i,
+    #             "sheetnum": idx + 1,
+    #             "vendor": sh[f'A{i}'].value,
+    #             "modelid": sh[f'B{i}'].value,
+    #             "diagramid": sh[f'C{i}'].value,
+    #             "name": sh[f'D{i}'].value,
+    #             "section": sh[f'E{i}'].value,
+    #             "diagram": sh[f'F{i}'].value,
+    #             "pdfurl": sh[f'G{i}'].value,
+    #         }
+    #         print('mount record', recno, '-', totalrow)
+    #         datalist.append(mdict)
+    # # breakpoint()
                
-    # xlsheet2 = xlbook.sheets["Sheet2"]
-    print('OK')
+    # # xlsheet2 = xlbook.sheets["Sheet2"]
+    # print('OK')
+    # --------------------------------
     maxrow = xlsheet1.range('C' + str(xlsheet1.cells.last_cell.row)).end('up').row
     # breakpoint()
     for i in range(2, maxrow + 1):
