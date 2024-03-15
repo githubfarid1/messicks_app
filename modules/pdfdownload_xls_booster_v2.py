@@ -101,14 +101,20 @@ def main():
     xlsheets = [s for s in xlbook.sheets]
     detailsheets = []
     datalist = []
+    totalrow = 0
     for sh in xlsheets:
         if "PDF-" in sh.name:
             detailsheets.append(sh)
-    print("step 1")
+            totalrow += sh.range('A' + str(sh.cells.last_cell.row)).end('up').row - 1
+    print("OK")
+    # breakpoint()
+    print('Mount all data to memory...')
+    time.sleep(1)
+    recno = 0
     for idx, sh in enumerate(detailsheets):
-        print(idx)
         lastrow = sh.range('A' + str(sh.cells.last_cell.row)).end('up').row + 1
         for i in range(2, lastrow):
+            recno += 1
             mdict = {
                 "rownum": i,
                 "sheetnum": idx + 1,
@@ -121,7 +127,7 @@ def main():
                 "pdfurl": sh[f'G{i}'].value,
 
             }
-            print(sh[f'B{i}'].value)
+            print('mount record', recno, 'from', totalrow)
             datalist.append(mdict)
     # breakpoint()
                
@@ -134,7 +140,7 @@ def main():
         vendor = xlsheet1[f'A{i}'].value
         title = vendor + " " + xlsheet1[f'C{i}'].value + " Parts"
         if xlsheet1[f'E{i}'].value == 'NO':
-            print('search',xlsheet1[f'B{i}'].value)
+            # print('search',xlsheet1[f'B{i}'].value)
             diagramlist, success, failed = parse(modelid=xlsheet1[f'B{i}'].value, datalist=datalist, xlbook=xlbook)
             # break
             # diagramlist.append([section, diagram, link, dowloadurl, pathname])
