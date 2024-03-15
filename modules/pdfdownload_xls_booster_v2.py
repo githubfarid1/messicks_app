@@ -104,7 +104,9 @@ def main():
     for sh in xlsheets:
         if "PDF-" in sh.name:
             detailsheets.append(sh)
+    print("step 1")
     for idx, sh in enumerate(detailsheets):
+        print(idx)
         lastrow = sh.range('A' + str(sh.cells.last_cell.row)).end('up').row + 1
         for i in range(2, lastrow):
             mdict = {
