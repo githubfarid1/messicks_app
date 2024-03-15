@@ -127,7 +127,7 @@ def main():
                 "pdfurl": sh[f'G{i}'].value,
 
             }
-            print('mount record', recno, 'from', totalrow)
+            print('mount record', recno, '-', totalrow)
             datalist.append(mdict)
     # breakpoint()
                
