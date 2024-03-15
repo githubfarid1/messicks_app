@@ -121,6 +121,7 @@ def main():
                 "pdfurl": sh[f'G{i}'].value,
 
             }
+            print(sh[f'B{i}'].value)
             datalist.append(mdict)
     # breakpoint()
                
