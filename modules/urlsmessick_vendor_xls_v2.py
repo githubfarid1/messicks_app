@@ -59,10 +59,10 @@ def parse(driver):
 
     # print(vendorurls)
     # sys.exit()
-    # input(vendorurls)
+    input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
-        if vendorurl[1] != 'Befco':
-            continue
+        # if vendorurl[1] != 'Befco':
+        #     continue
         if os.path.exists(s.XLS_RESULT_PATH_V2 + os.sep +slugify(vendorurl[1]) + ".xlsx"):
             print(vendorurl[1], "Skipped (File Found)")
             continue
