@@ -59,7 +59,7 @@ def parse(driver):
 
     # print(vendorurls)
     # sys.exit()
-    input(vendorurls)
+    # input(vendorurls)
     for idx, vendorurl in enumerate(vendorurls):
         # if vendorurl[1] != 'Befco':
         #     continue
