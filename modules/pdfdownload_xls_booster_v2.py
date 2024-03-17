@@ -60,7 +60,7 @@ def parse(modelid, datalist, xlbook):
     for row in modeldata:
         # print(xlsheet2[f'B{row}'].value)
         dowloadurl = row['pdfurl']
-        title, section, diagram  = row['name'], row['section'], row['diagram']
+        title, section, diagram  = row['name'], row['section'], row['diagram'].strip()
         pathname = genfilename(title, section, diagram)
         filename = os.path.basename(pathname)
         try:
